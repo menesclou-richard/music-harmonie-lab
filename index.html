@@ -2441,6 +2441,7 @@ function checkAnswer(chosen, choices) {
 function switchLevel(val) {
   level = parseInt(val);
   stopIntervalAnim();
+  _degreeSubPage = 1; // réinitialiser la sous-page degrés
   // Fermer les sous-pages si ouvertes
   closeSubPage();
   document.getElementById("levelSelect").value = val;
@@ -3524,7 +3525,24 @@ const VOICE = {
 function showVoicePanel() { /* non utilisé */ }
 
 // ===================== NIVEAU 8 — LES DEGRÉS =====================
+let _degreeSubPage = 1; // 1, 2 ou 3
+
 function buildDegreesLevel() {
+  // Supprimer l'ancien panneau flottant s'il existe
+  const oldPanel = document.getElementById('degreePanel');
+  if (oldPanel) oldPanel.remove();
+
+  const stageWrap = document.querySelector('.stage-wrap');
+  if (stageWrap) stageWrap.style.display = 'none';
+
+  showDegreeSubPage(_degreeSubPage);
+}
+
+function showDegreeSubPage(page) {
+  _degreeSubPage = page;
+  // Nettoyer le bouton fixe page 3 s'il existe
+  const oldPrev3 = document.getElementById('degreePrev3');
+  if (oldPrev3) oldPrev3.remove();
   const c = document.getElementById('controls');
   if (!c) return;
   c.innerHTML = '';
@@ -3533,80 +3551,123 @@ function buildDegreesLevel() {
   c.style.alignItems = 'center';
   c.style.gap = '0px';
   c.style.overflowY = 'auto';
-  c.style.maxHeight = '80vh';
+  c.style.maxHeight = '72vh';
+  c.style.marginTop = '28px';
   c.style.paddingBottom = '40px';
 
-  const stageWrap = document.querySelector('.stage-wrap');
-  if (stageWrap) stageWrap.style.display = 'none';
+  // Indicateur de page 1/2/3 — en bas
+  const nav = document.createElement('div');
+  nav.style.cssText = 'display:flex; gap:8px; align-items:center; justify-content:center; margin:16px 0 6px; width:100%;';
+  [1,2,3].forEach(i => {
+    const dot = document.createElement('div');
+    dot.style.cssText = `width:10px; height:10px; border-radius:50%; background:${i===page?'#F4D03F':'rgba(255,255,255,0.2)'}; cursor:pointer; transition:background 0.3s;`;
+    dot.onclick = () => showDegreeSubPage(i);
+    nav.appendChild(dot);
+  });
 
-  // Panneau texte fixe à droite
-  let panel = document.getElementById('degreePanel');
-  if (!panel) {
-    panel = document.createElement('div');
-    panel.id = 'degreePanel';
-    panel.style.cssText = `
-      position:fixed; top:160px; right:20px; width:280px; z-index:50;
-      background:rgba(44,62,80,0.75); border-radius:14px;
-      padding:18px 20px; border:1px solid rgba(244,163,32,0.3);
-      backdrop-filter:blur(6px); font-family:Georgia,serif;
-    `;
-    panel.innerHTML = `
-      <div style="font-size:15px; font-weight:bold; color:#F4D03F; margin-bottom:12px; border-bottom:1px solid rgba(244,163,32,0.3); padding-bottom:8px;">Chaque note possède un nom et une fonction.</div>
-      <div style="font-size:15px; color:#D6EAF8; line-height:1.8;">
-        <p>Au-delà du <strong style="color:#F4D03F">nom</strong> qui caractérise la note — comme le prénom d'une personne — les notes ont aussi une <strong style="color:#48C9B0">valeur numérique</strong>.</p>
-        <p style="margin-top:8px;">Cette valeur caractérise leur <strong style="color:#F4D03F">fonction</strong> dans le groupe de notes au moment où elles sont jouées.</p>
-        <p style="margin-top:8px;">De la même manière que nous avons tous un prénom et un <strong style="color:#C8A0D8">rôle</strong> dans un groupe, une profession, une activité.</p>
-        <p style="margin-top:8px; color:#C8A0D8;">Cette fonction est essentielle pour comprendre le mouvement.</p>
-      </div>
-    `;
-    document.body.appendChild(panel);
+  if (page === 1) {
+    // ── Page 1 : layout deux colonnes ──
+    const layout = document.createElement('div');
+    layout.style.cssText = 'display:flex; gap:24px; align-items:flex-start; justify-content:center; width:100%; max-width:900px; flex-wrap:wrap;';
+
+    // Colonne gauche : texte + cartes
+    const left = document.createElement('div');
+    left.style.cssText = 'flex:1; min-width:280px; max-width:480px;';
+
+    const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
+      <p>Les degrés d'une tonalité correspondent à la <strong style="color:#F4D03F">position de la note dans la gamme</strong>.</p>
+      <p>Ils sont identiques aux numéros des étages d'un immeuble — des repères dans l'espace musical, comme des marches d'escalier ou les barreaux d'une échelle.</p>
+      <p style="margin-top:12px; color:#C8A0D8; font-style:italic;">Chaque note a un rôle.</p>
+    `);
+    s1.style.width = '100%';
+    s1.style.maxWidth = '100%';
+    s1.style.boxSizing = 'border-box';
+    left.appendChild(s1);
+
+    const cards = buildNoteCards();
+    cards.style.cssText += 'justify-content:flex-start; margin-top:8px; transform:scale(0.85); transform-origin:left center;';
+    left.appendChild(cards);
+
+    // Colonne droite : immeuble réduit
+    const right = document.createElement('div');
+    right.style.cssText = 'flex:0 0 auto; display:flex; align-items:flex-start; justify-content:center;';
+    const bldg = buildBuildingAnim();
+    bldg.style.transform = 'scale(0.8)';
+    bldg.style.transformOrigin = 'top center';
+    right.appendChild(bldg);
+
+    layout.appendChild(left);
+    layout.appendChild(right);
+    c.appendChild(layout);
+
+  } else if (page === 2) {
+    // ── Page 2 : 7 et 12 ──
+    const s2 = buildDegreeSection('7 notes · 7 jours · 12 notes · 12 mois', `
+      <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
+      <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
+      <p style="margin-top:12px; color:#85929E; font-style:italic;">Une belle analogie — rien de plus, rien de moins.</p>
+    `, '15px');
+    c.appendChild(s2);
+    c.appendChild(build7and12Anim());
+
+  } else if (page === 3) {
+    // Bouton Précédent en haut à gauche sur page 3
+    const btnPrevTop = document.createElement('button');
+    btnPrevTop.textContent = '← Précédent';
+    btnPrevTop.style.cssText = 'align-self:flex-start; background:rgba(255,255,255,0.1); color:#F5F0E8; border:1px solid rgba(255,255,255,0.25); border-radius:10px; padding:8px 20px; font-size:15px; cursor:pointer; margin-bottom:8px;';
+    btnPrevTop.onclick = () => showDegreeSubPage(2);
+    // ── Page 3 : Les modes ──
+    const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
+      <p>Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10...</p>
+      <p style="margin-top:8px;">C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
+    `);
+    c.appendChild(s3);
+    c.appendChild(buildModesAnim());
+
+    // Ligne interactive + bouton Précédent au même niveau
+    const btnPrev3 = document.createElement('button');
+    btnPrev3.id = 'degreePrev3';
+    btnPrev3.textContent = '← Précédent';
+    btnPrev3.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1A6B5A,#1A5276); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100; white-space:nowrap;';
+    btnPrev3.onclick = () => showDegreeSubPage(2);
+
+    const interactRow = document.createElement('div');
+    interactRow.style.cssText = 'display:flex; align-items:center; gap:16px; width:100%; max-width:700px; justify-content:center;';
+    interactRow.appendChild(buildInteractiveDegrees());
+    c.appendChild(interactRow);
+    document.body.appendChild(btnPrev3);
   }
 
-  // ── Section 1 : Les degrés comme étages ──
-  const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
-    <p>Les degrés d'une tonalité correspondent à la <strong style="color:#F4D03F">position de la note dans la gamme</strong>.</p>
-    <p>Ils sont identiques aux numéros des étages d'un immeuble — des repères dans l'espace musical, comme des marches d'escalier ou les barreaux d'une échelle.</p>
-  `);
-  c.appendChild(s1);
+  // Navigation Précédent / Suivant
+  c.appendChild(nav);
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex; gap:16px; justify-content:center; margin-top:12px; width:100%;';
 
-  // Animation immeuble avec degrés
-  c.appendChild(buildBuildingAnim());
+  if (page === 2) {
+    // Page 2 : Précédent et Suivant fixed en bas, même style
+    const btnPrev2 = document.createElement('button');
+    btnPrev2.textContent = '← Précédent';
+    btnPrev2.style.cssText = 'position:fixed; bottom:30px; left:calc(50% - 140px); background:linear-gradient(135deg,#1A6B5A,#1A5276); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
+    btnPrev2.onclick = () => showDegreeSubPage(1);
+    btnRow.appendChild(btnPrev2);
 
-  // ── Section 2 : 7 et 12 ──
-  const s2 = buildDegreeSection('📅 7 notes · 7 jours · 12 notes · 12 mois', `
-    <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
-    <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
-    <p style="color:#D6EAF8; margin-top:8px;">Ce n'est pas un hasard — la musique et le temps partagent les mêmes structures.</p>
-  `);
-  c.appendChild(s2);
-  c.appendChild(build7and12Anim());
+    const btnNext2 = document.createElement('button');
+    btnNext2.textContent = 'Suivant →';
+    btnNext2.style.cssText = 'position:fixed; bottom:30px; left:calc(50% + 20px); background:linear-gradient(135deg,#1A5276,#1A6B5A); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
+    btnNext2.onclick = () => showDegreeSubPage(3);
+    btnRow.appendChild(btnNext2);
 
-  // ── Section 3 : La rue et l'immeuble ──
-  const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
-    <p>Imaginez une rue étroite. Vue depuis la rue, vous avez une certaine vision. Montez au <strong style="color:#F4D03F">1er étage</strong> — la même rue, mais une autre perspective. Au <strong style="color:#F4D03F">2ème étage</strong> — encore différente.</p>
-    <p>En musique c'est pareil. Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10... C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
-    <p style="color:#D6EAF8; margin-top:8px;">C'est pour ça qu'avec si peu de notes on peut faire autant de musique.</p>
-  `);
-  c.appendChild(s3);
-  c.appendChild(buildModesAnim());
-
-  // ── Section 4 : Carte d'identité de la note ──
-  const s4 = buildDegreeSection('🪪 Chaque note a une identité', `
-    <p>Une note c'est comme une personne — elle a un <strong style="color:#F4D03F">prénom</strong> (Do, Ré, Mi...) et un <strong style="color:#48C9B0">rôle</strong> (1, 2, 3...) dans le groupe.</p>
-    <p>Cette valeur numérique caractérise sa <strong style="color:#F4D03F">fonction</strong> au moment où elle est jouée. Et elle est toujours accompagnée d'une <strong style="color:#C8A0D8">valeur dans le temps</strong> — noire = 1 temps, blanche = 2 temps, croche = ½ temps.</p>
-  `);
-  c.appendChild(s4);
-  c.appendChild(buildNoteCards());
-
-  // ── Section 5 : Interactif ──
-  const s5 = buildDegreeSection('🎹 Clique sur une note', `
-    <p style="color:#D6EAF8; font-style:italic;">Clique sur une note pour voir sa carte d'identité.</p>
-  `);
-  c.appendChild(s5);
-  c.appendChild(buildInteractiveDegrees());
+  } else if (page === 1) {
+    const btnNext = document.createElement('button');
+    btnNext.textContent = 'Suivant →';
+    btnNext.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1A5276,#1A6B5A); color:#fff; border:none; border-radius:10px; padding:12px 32px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
+    btnNext.onclick = () => showDegreeSubPage(2);
+    btnRow.appendChild(btnNext);
+  }
+  c.appendChild(btnRow);
 }
 
-function buildDegreeSection(title, html) {
+function buildDegreeSection(title, html, titleSize) {
   const div = document.createElement('div');
   div.style.cssText = `
     width:680px; max-width:95vw;
@@ -3616,8 +3677,8 @@ function buildDegreeSection(title, html) {
     backdrop-filter:blur(4px);
   `;
   div.innerHTML = `
-    <div style="font-size:19px; font-weight:bold; color:#F4D03F; font-family:Georgia,serif; margin-bottom:12px;">${title}</div>
-    <div style="font-size:16px; color:#D6EAF8; font-family:Georgia,serif; line-height:1.8;">${html}</div>
+    <div style="font-size:${titleSize||'19px'}; font-weight:bold; color:#F4D03F; font-family:'Inter',Arial,sans-serif; margin-bottom:12px;">${title}</div>
+    <div style="font-size:16px; color:#D6EAF8; font-family:'Inter',Arial,sans-serif; line-height:1.8;">${html}</div>
   `;
   return div;
 }
@@ -3631,6 +3692,11 @@ function buildBuildingAnim() {
   // Immeuble
   const building = document.createElement('div');
   building.style.cssText = 'display:flex; flex-direction:column-reverse; gap:3px;';
+  // Rez-de-chaussée ajouté en premier = affiché en bas avec column-reverse
+  const rdc = document.createElement('div');
+  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
+  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
+  building.appendChild(rdc);
   for (let i = 0; i < 7; i++) {
     const floor = document.createElement('div');
     floor.style.cssText = `
@@ -3648,11 +3714,6 @@ function buildBuildingAnim() {
     floor.onmouseleave = () => { floor.style.background = i===0?'rgba(242,169,138,0.7)':'rgba(44,62,80,0.7)'; floor.style.transform = ''; };
     building.appendChild(floor);
   }
-  // Rez-de-chaussée
-  const rdc = document.createElement('div');
-  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
-  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
-  building.appendChild(rdc);
 
   // Ascenseur animé
   const lift = document.createElement('div');
@@ -3755,7 +3816,7 @@ function buildModesAnim() {
 
 function buildNoteCards() {
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex; gap:8px; justify-content:center; margin:8px 0 16px; flex-wrap:wrap;';
+  wrap.style.cssText = 'display:flex; gap:5px; justify-content:flex-start; margin:8px 0 16px; flex-wrap:nowrap;';
   const notes = ['Do','Ré','Mi','Fa','Sol','La','Si'];
   const colors = ['#F2A98A','#F4C08A','#F5E08A','#90D4A0','#90B8F0','#A8A0E0','#C8A0D8'];
   const durations = ['♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t'];
@@ -3763,7 +3824,7 @@ function buildNoteCards() {
     const card = document.createElement('div');
     card.style.cssText = `
       background:rgba(44,62,80,0.7); border:1px solid ${colors[i]}66;
-      border-radius:10px; padding:10px 8px; text-align:center; width:72px;
+      border-radius:10px; padding:8px 4px; text-align:center; width:60px;
       transition:transform 0.2s; cursor:default;
     `;
     card.innerHTML = `
