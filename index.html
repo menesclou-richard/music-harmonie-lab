@@ -151,14 +151,14 @@
     bottom: 0; left: 0; right: 0;
     width: 100%; height: 45%;
     pointer-events: none;
-    z-index: 1001;
+    z-index: 1;
     opacity: 0.12;
   }
   .stage-wrap, .top-name, .level-switcher, #controls,
   #formulaTop, #formulaText, h1, h2, #levelMsg,
   #pageSubtitle, #mainTitle {
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   .top-name {
@@ -773,7 +773,7 @@
 
 
   <!-- Coffre style fond marin submergé -->
-  <div id="treasureChest" style="position:absolute; top:52%; left:50%; transform:translate(-50%,-50%); z-index:15; width:260px; height:200px;">
+  <div id="treasureChest" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:15; width:260px; height:200px;">
     <svg id="chestSVG" viewBox="0 0 260 200" width="260" height="200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -890,7 +890,7 @@
     </svg>
   </div>
 
-  <div id="introBook" style="opacity:0; position:absolute; top:45%; left:50%; transform:translate(-50%, 20px) scale(0.3);">
+  <div id="introBook" style="opacity:0; position:absolute; top:53%; left:50%; transform:translate(-50%, 20px) scale(0.3);">
     <svg width="780" height="580" viewBox="0 0 680 420">
       <defs>
         <linearGradient id="coverGrad" x1="0" y1="0" x2="1" y2="1">
@@ -1017,7 +1017,7 @@
   </div>
 
   <!-- Zone chaussettes au-dessus du clavier -->
-  <div style="position:relative; width:490px; margin-top:20px;">
+  <div style="position:relative; width:490px; margin-top:4px;">
     <div id="introSocksRow" style="position:relative; height:180px; width:660px; opacity:0;"></div>
     <!-- Mini clavier -->
     <svg id="introKeyboard" width="660" height="80" viewBox="0 0 660 80" style="opacity:0;">
@@ -1091,8 +1091,8 @@
       "Cherchez, vous trouverez." &mdash; J.S. Bach
     </div>
   </div>
-  <div id="introStartBtn" style="position:absolute; bottom:30px; left:50%; transform:translateX(-50%); z-index:20; text-align:center; cursor:pointer;" onclick="startIntroWithAudio()">
-    <div style="color:#D4B896; font-size:17px; font-family:Georgia,serif; font-style:italic; opacity:0.85;">
+  <div id="introStartBtn" style="position:absolute; bottom:70px; left:50%; transform:translateX(-50%); z-index:20; text-align:center; cursor:pointer; width:90%;" onclick="startIntroWithAudio()">
+    <div style="color:#D4B896; font-size:20px; font-family:Georgia,serif; font-style:italic; opacity:0.95;">
       Appuyez sur <strong style="color:#F4D03F;">Entrée</strong> ou cliquez ici pour commencer
     </div>
   </div>
@@ -1106,7 +1106,7 @@
     </div>
   </div>
 
-  <button id="skipIntroBtn" style="position:absolute; bottom:20px; right:24px; background:transparent; border:1px solid rgba(255,255,255,0.35); color:#F5F0E8; font-size:13px; padding:5px 14px; border-radius:20px; cursor:pointer; font-family:Arial,sans-serif; opacity:0.55;">Passer l'introduction →</button>
+  <button id="skipIntroBtn" style="position:absolute; bottom:20px; right:16px; background:transparent; border:1px solid rgba(255,255,255,0.35); color:#F5F0E8; font-size:16px; padding:8px 18px; border-radius:20px; cursor:pointer; font-family:Arial,sans-serif; opacity:0.75;">Passer l'introduction →</button>
 
 </div>
 
@@ -1210,19 +1210,30 @@
 
 @media (max-width: 700px) {
   #degreePanel {
-    position: fixed !important;
-    top: auto !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    left: 0 !important;
+    position: static !important;
     width: 100% !important;
-    max-height: 55vh;
-    overflow-y: auto;
-    border-radius: 16px 16px 0 0 !important;
+    top: auto !important;
+    right: auto !important;
+    margin: 0 0 16px 0 !important;
+    border-radius: 12px !important;
     box-sizing: border-box;
   }
   #musicNumbers {
     display: none !important;
+  }
+  html, body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto !important;
+  }
+  .stage-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+    margin-top: -120px;
+  }
+  .stage {
+    min-width: 700px !important;
   }
 }
 </style>
@@ -1259,7 +1270,7 @@
 <div id="controls" style="width:100%; max-width:900px; margin:0 auto;"></div>
 
 <!-- Pages sous-sections niveau 0 -->
-<div id="subPageCalc" style="display:none; width:100%; max-width:600px; margin:0 auto; padding:16px; box-sizing:border-box; position:relative; z-index:10;">
+<div id="subPageCalc" style="width:100%; max-width:600px; margin:60px auto 0; padding:16px; box-sizing:border-box; position:relative; z-index:10; flex-direction:column; justify-content:center; display:none;">
   <div style="background:rgba(44,62,80,0.75); border-radius:14px; padding:20px; border:1px solid rgba(100,140,180,0.3); backdrop-filter:blur(6px); margin-bottom:16px;">
     <div style="font-size:19px; font-weight:bold; color:#F39C12; text-align:center; margin-bottom:18px; letter-spacing:1px;">🎹 Calculateur d'intervalle</div>
     <div style="margin-bottom:14px;">
@@ -1282,7 +1293,7 @@
   </div>
 </div>
 
-<div id="subPageTest" style="display:none; width:100%; max-width:600px; margin:0 auto; padding:16px; box-sizing:border-box; position:relative; z-index:10;">
+<div id="subPageTest" style="width:100%; max-width:600px; margin:60px auto 0; padding:16px; box-sizing:border-box; position:relative; z-index:10; flex-direction:column; justify-content:center; display:none;">
   <div style="background:rgba(44,62,80,0.75); border-radius:14px; padding:20px; border:1px solid rgba(100,140,180,0.3); backdrop-filter:blur(6px);">
     <div style="font-size:19px; font-weight:bold; color:#F39C12; text-align:center; margin-bottom:6px; letter-spacing:1px;">🎯 Test des intervalles</div>
     <div id="testScore" style="text-align:center; font-size:15px; color:#85929E; margin-bottom:18px;">Score : <span id="testScoreVal">0</span> / <span id="testTotalVal">0</span></div>
@@ -1590,7 +1601,7 @@ function startIntroWithAudio() {
 function launchSocksFromChest(container) {
   // Position approximative du coffre : centre, 52% de la hauteur
   const chestX = window.innerWidth / 2;
-  const chestY = window.innerHeight * 0.52;
+  const chestY = window.innerHeight * 0.50;
 
   SOCK_NOTES.forEach((n, i) => {
     const sockW = 32;
@@ -2326,12 +2337,12 @@ function openSubPage(which) {
   const pt = document.getElementById('pageTitle');
 
   if (which === 'calc') {
-    document.getElementById('subPageCalc').style.display = 'block';
+    document.getElementById('subPageCalc').style.display = 'flex';
     document.getElementById('subPageTest').style.display = 'none';
     if (pt) pt.textContent = 'Calculateur d\'intervalle';
     initCalcSelectors();
   } else {
-    document.getElementById('subPageTest').style.display = 'block';
+    document.getElementById('subPageTest').style.display = 'flex';
     document.getElementById('subPageCalc').style.display = 'none';
     if (pt) pt.textContent = 'Test des intervalles';
     _testScore = 0; _testTotal = 0;
