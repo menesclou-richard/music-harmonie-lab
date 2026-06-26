@@ -337,7 +337,26 @@
   .stage-left { flex: 1; min-width: 0; }
   .grid { position: relative; width: 100%; }
 
-  /* ---- Cadre piano (tonique → octave) ---- */
+  /* ── Manche guitare intro ── */
+  .ineck-row { display:flex; align-items:center; height:16px; }
+  .ineck-sname { width:24px; flex-shrink:0; font-size:8px; color:#C8A870; font-weight:600; text-align:right; padding-right:4px; }
+  .ineck-nut { width:6px; height:100%; background:#D4B483; flex-shrink:0; border-right:2px solid #8B7355; }
+  .ineck-frets { flex:1; display:flex; height:100%; min-width:560px; }
+  .ineck-cell { flex:1; height:100%; border-right:1.5px solid rgba(220,210,190,0.5); display:flex; align-items:center; justify-content:center; position:relative; background:rgba(60,30,10,0.4); }
+  .ineck-cell:last-child { border-right:none; }
+  .ineck-cell::before { content:''; position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); z-index:0; }
+  .ineck-s1 .ineck-cell::before { height:1px; background:linear-gradient(90deg,#E0E0E0,#C0C0C0); }
+  .ineck-s2 .ineck-cell::before { height:1px; background:linear-gradient(90deg,#D8D8D8,#B8B8B8); }
+  .ineck-s3 .ineck-cell::before { height:2px; background:linear-gradient(90deg,#C8C8C8,#A8A8A8); }
+  .ineck-s4 .ineck-cell::before { height:2px; background:linear-gradient(90deg,#C0C0C0,#A0A0A0); }
+  .ineck-s5 .ineck-cell::before { height:2px; background:linear-gradient(90deg,#B0B0B0,#909090); }
+  .ineck-s6 .ineck-cell::before { height:3px; background:linear-gradient(90deg,#A0A0A0,#808080); }
+  .ineck-dot { width:12px; height:12px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:5px; font-weight:700; color:#fff; z-index:3; position:relative; border:1px solid rgba(255,255,255,0.4); box-shadow:0 1px 3px rgba(0,0,0,0.6); }
+  .ineck-dot.tonic { width:14px; height:14px; border:1.5px solid #fff; box-shadow:0 0 6px rgba(255,255,255,0.5); }
+  @keyframes neckBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  .ineck-dot { animation:neckBounce 1.2s ease-in-out infinite; }
+
+
   .piano-frame {
     position: absolute; top: -3px; bottom: -3px;
     border: 2px solid #3498DB; border-radius: 7px;
@@ -1017,8 +1036,8 @@
   </div>
 
   <!-- Zone chaussettes au-dessus du clavier -->
-  <div style="position:relative; width:490px; margin-top:4px;">
-    <div id="introSocksRow" style="position:relative; height:180px; width:660px; opacity:0;"></div>
+  <div style="position:relative; width:490px; margin-top:0px;">
+    <div id="introSocksRow" style="position:relative; height:140px; width:660px; opacity:0;"></div>
     <!-- Mini clavier -->
     <svg id="introKeyboard" width="660" height="80" viewBox="0 0 660 80" style="opacity:0;">
       <!-- Octave 1 — 7 touches blanches (50px chacune) -->
@@ -1079,6 +1098,108 @@
       <text x="532" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">11</text>
       <text x="582" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">12</text>
       <text x="632" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">13</text>
+    </svg>
+  </div>
+
+  <!-- Manche de guitare sous le piano -->
+  <div id="introNeck" style="opacity:0; transition:opacity 1s; margin-top:4px; width:100%; max-width:860px;">
+
+    <!-- SVG guitare complète en un seul bloc -->
+    <svg id="introGuitarSVG" width="100%" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg" style="height:160px;">
+
+      <!-- Tête de manche -->
+      <rect x="2" y="15" width="52" height="70" rx="7" fill="#6B3A1A" stroke="#4A2010" stroke-width="1.5"/>
+      <!-- Mécaniques haut (3) -->
+      <circle cx="16" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <circle cx="29" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <circle cx="42" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <!-- Mécaniques bas (3) -->
+      <circle cx="16" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <circle cx="29" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <circle cx="42" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <!-- Logo Gibson -->
+      <text x="29" y="53" text-anchor="middle" font-size="10" fill="#C8A040" font-family="Georgia,serif" font-style="italic" font-weight="bold" transform="rotate(-90, 29, 53)">Gibson</text>
+      <!-- Sillet -->
+      <rect x="52" y="20" width="5" height="60" rx="1" fill="#D4B483"/>
+
+      <!-- Manche palissandre -->
+      <rect x="57" y="22" width="390" height="56" fill="#3A1E08" stroke="#6B4020" stroke-width="1"/>
+
+      <!-- Frettes (0 à 12) -->
+      <line x1="57"  y1="22" x2="57"  y2="78" stroke="#D4B483" stroke-width="3"/>
+      <line x1="87"  y1="22" x2="87"  y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="116" y1="22" x2="116" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="143" y1="22" x2="143" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="169" y1="22" x2="169" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="194" y1="22" x2="194" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="218" y1="22" x2="218" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="241" y1="22" x2="241" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="263" y1="22" x2="263" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="284" y1="22" x2="284" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="304" y1="22" x2="304" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="323" y1="22" x2="323" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="341" y1="22" x2="341" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="358" y1="22" x2="358" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="374" y1="22" x2="374" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="388" y1="22" x2="388" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="447" y1="22" x2="447" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+
+      <!-- Inlays frettes 3,5,7,9,12 -->
+      <circle cx="156" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="206" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="252" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="294" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="331" cy="40" r="3" fill="rgba(255,255,255,0.2)"/>
+      <circle cx="331" cy="60" r="3" fill="rgba(255,255,255,0.2)"/>
+
+      <!-- Cordes (6) -->
+      <line x1="57" y1="30" x2="447" y2="30" stroke="#D8D8D8" stroke-width="1"/>
+      <line x1="57" y1="38" x2="447" y2="38" stroke="#D0D0D0" stroke-width="1"/>
+      <line x1="57" y1="46" x2="447" y2="46" stroke="#C0C0C0" stroke-width="1.5"/>
+      <line x1="57" y1="54" x2="447" y2="54" stroke="#B8B8B8" stroke-width="1.5"/>
+      <line x1="57" y1="62" x2="447" y2="62" stroke="#A8A8A8" stroke-width="2"/>
+      <line x1="57" y1="70" x2="447" y2="70" stroke="#989898" stroke-width="2"/>
+
+      <!-- Corps Gibson 175 -->
+      <path d="M447,5 C435,5 424,10 420,20 C416,30 422,36 422,46 C422,56 414,60 412,70 C410,82 418,94 432,100 C446,106 465,108 490,108 C530,108 568,98 590,82 C606,70 612,54 608,40 C604,26 590,14 570,8 C552,3 522,0 490,2 Z" fill="#8B2020" stroke="#5C1010" stroke-width="1.5"/>
+      <!-- Brillance -->
+      <path d="M450,8 C438,10 428,18 426,26 C424,34 428,40 428,46" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3"/>
+      <!-- Ouïe f haut -->
+      <path d="M468,32 C465,28 463,24 463,20 C463,16 465,14 467,12" fill="none" stroke="#5C0808" stroke-width="2.5"/>
+      <!-- Ouïe f bas -->
+      <path d="M468,72 C465,76 463,80 463,84 C463,88 465,90 467,92" fill="none" stroke="#5C0808" stroke-width="2.5"/>
+      <!-- Chevalet -->
+      <rect x="453" y="47" width="26" height="6" rx="2" fill="#3A3A3A"/>
+      <!-- Micro manche -->
+      <rect x="478" y="35" width="48" height="14" rx="3" fill="#2A2A2A" stroke="#C8A040" stroke-width="0.8"/>
+      <!-- Micro chevalet -->
+      <rect x="478" y="62" width="48" height="14" rx="3" fill="#2A2A2A" stroke="#C8A040" stroke-width="0.8"/>
+      <!-- Cordier trapèze -->
+      <path d="M454,53 L480,53 L484,72 L450,72 Z" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+      <!-- Boutons volume -->
+      <circle cx="555" cy="82" r="7" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+      <circle cx="573" cy="70" r="7" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+      <!-- Sélecteur -->
+      <circle cx="545" cy="25" r="5" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+
+      <!-- Numéros de frettes en bas -->
+      <text x="72"  y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">0</text>
+      <text x="102" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">1</text>
+      <text x="130" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">2</text>
+      <text x="156" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">3</text>
+      <text x="182" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">4</text>
+      <text x="206" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">5</text>
+      <text x="230" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">6</text>
+      <text x="252" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">7</text>
+      <text x="274" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">8</text>
+      <text x="294" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">9</text>
+      <text x="314" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">10</text>
+      <text x="332" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">11</text>
+      <text x="350" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">12</text>
+
+      <!-- Notes Sock Notes — générées dynamiquement par JS -->
+      <g id="introNeckDots"></g>
+
     </svg>
   </div>
 
@@ -1853,6 +1974,95 @@ function buildSocksRow() {
 
 }
 
+function highlightNeckNote(noteName) {
+  const SOCK  = ['#E8453C','#F4A020','#E8D000','#3CB878','#3A8FE8','#8060D0','#C060D8'];
+  const NOTES = ['Do','Do#','Ré','Ré#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+  const MAJOR = [0,2,4,5,7,9,11];
+  const FRET_X = [72, 102, 130, 156, 182, 206, 230, 252, 274, 294, 314, 332, 350];
+  const STRING_Y = [30, 38, 46, 54, 62, 70];
+  const OPEN = [4, 11, 7, 2, 9, 4];
+  const ti = 0;
+
+  const g = document.getElementById('introNeckDots');
+  if (!g) return;
+  g.innerHTML = '';
+
+  const ni = NOTES.indexOf(noteName);
+  if (ni === -1) return;
+  const diff = (ni - ti + 12) % 12;
+  const degIdx = MAJOR.indexOf(diff);
+  if (degIdx === -1) return;
+
+  const color = SOCK[degIdx % 7];
+  const lightColors = [1, 2, 3];
+  const textColor = lightColors.includes(degIdx % 7) ? '#2C1810' : '#fff';
+
+  OPEN.forEach((open, si) => {
+    const cy = STRING_Y[si];
+    for (let f = 0; f <= 12; f++) {
+      const noteHere = (open + f) % 12;
+      if (noteHere !== ni) continue;
+      const cx = FRET_X[f];
+      if (!cx) continue;
+
+      if (f === 0) {
+        // Corde à vide — cercle vide
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', '9');
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', color);
+        circle.setAttribute('stroke-width', '2.5');
+        circle.style.animation = 'neckBounce 1.2s ease-in-out infinite';
+        g.appendChild(circle);
+        const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+        txt.setAttribute('x', cx);
+        txt.setAttribute('y', cy + 4);
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('font-size', '8');
+        txt.setAttribute('font-weight', '700');
+        txt.setAttribute('fill', color);
+        txt.setAttribute('font-family', 'Inter,sans-serif');
+        txt.setAttribute('pointer-events', 'none');
+        txt.style.animation = 'neckBounce 1.2s ease-in-out infinite';
+        txt.textContent = noteName;
+        g.appendChild(txt);
+      } else {
+        // Note frettée — cercle plein
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', '11');
+        circle.setAttribute('fill', color);
+        circle.setAttribute('stroke', '#fff');
+        circle.setAttribute('stroke-width', '1.5');
+        circle.style.animation = 'neckBounce 1.2s ease-in-out infinite';
+        g.appendChild(circle);
+        const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+        txt.setAttribute('x', cx);
+        txt.setAttribute('y', cy + 4);
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('font-size', '9');
+        txt.setAttribute('font-weight', '700');
+        txt.setAttribute('fill', textColor);
+        txt.setAttribute('font-family', 'Inter,sans-serif');
+        txt.setAttribute('pointer-events', 'none');
+        txt.style.animation = 'neckBounce 1.2s ease-in-out infinite';
+        txt.textContent = noteName;
+        g.appendChild(txt);
+      }
+    }
+  });
+}
+
+function buildIntroNeck() {
+  const g = document.getElementById('introNeckDots');
+  if (!g) return;
+  g.innerHTML = '';
+  // Manche vide au départ — les notes s'affichent une par une via highlightNeckNote
+} 
+
 function runIntroSequence() {
   const is   = document.getElementById('introScreen');
   const titl = document.getElementById('introTitle');
@@ -1884,6 +2094,10 @@ function runIntroSequence() {
     // Montrer piano et chaussettes
     if (introKB) { introKB.style.transition='opacity 0.8s'; introKB.style.opacity='1'; }
     if (row) { row.style.transition='opacity 0.8s'; row.style.opacity='1'; }
+    // Construire et afficher le manche
+    buildIntroNeck();
+    const introNeck = document.getElementById('introNeck');
+    if (introNeck) { introNeck.style.transition='opacity 0.8s'; introNeck.style.opacity='1'; }
 
     // Les 7 chaussettes arrivent une par une
     for (let i = 0; i < SOCK_NOTES.length; i++) {
@@ -1924,6 +2138,9 @@ function spawnSockOnKey(i, row, keyPositions, sockSizes, speeches, is) {
   div.innerHTML = makeSockSVG(n, sockW);
   row.appendChild(div);
   div.style.animation = 'sockDropOnKey 0.6s cubic-bezier(.34,1.56,.64,1) forwards';
+
+  // Allumer les notes correspondantes sur le manche
+  highlightNeckNote(n.note);
 
   // Bulle individuelle accrochée à la chaussette
   setTimeout(() => {
@@ -2441,7 +2658,6 @@ function checkAnswer(chosen, choices) {
 function switchLevel(val) {
   level = parseInt(val);
   stopIntervalAnim();
-  _degreeSubPage = 1; // réinitialiser la sous-page degrés
   // Fermer les sous-pages si ouvertes
   closeSubPage();
   document.getElementById("levelSelect").value = val;
@@ -3525,24 +3741,7 @@ const VOICE = {
 function showVoicePanel() { /* non utilisé */ }
 
 // ===================== NIVEAU 8 — LES DEGRÉS =====================
-let _degreeSubPage = 1; // 1, 2 ou 3
-
 function buildDegreesLevel() {
-  // Supprimer l'ancien panneau flottant s'il existe
-  const oldPanel = document.getElementById('degreePanel');
-  if (oldPanel) oldPanel.remove();
-
-  const stageWrap = document.querySelector('.stage-wrap');
-  if (stageWrap) stageWrap.style.display = 'none';
-
-  showDegreeSubPage(_degreeSubPage);
-}
-
-function showDegreeSubPage(page) {
-  _degreeSubPage = page;
-  // Nettoyer le bouton fixe page 3 s'il existe
-  const oldPrev3 = document.getElementById('degreePrev3');
-  if (oldPrev3) oldPrev3.remove();
   const c = document.getElementById('controls');
   if (!c) return;
   c.innerHTML = '';
@@ -3551,123 +3750,80 @@ function showDegreeSubPage(page) {
   c.style.alignItems = 'center';
   c.style.gap = '0px';
   c.style.overflowY = 'auto';
-  c.style.maxHeight = '72vh';
-  c.style.marginTop = '28px';
+  c.style.maxHeight = '80vh';
   c.style.paddingBottom = '40px';
 
-  // Indicateur de page 1/2/3 — en bas
-  const nav = document.createElement('div');
-  nav.style.cssText = 'display:flex; gap:8px; align-items:center; justify-content:center; margin:16px 0 6px; width:100%;';
-  [1,2,3].forEach(i => {
-    const dot = document.createElement('div');
-    dot.style.cssText = `width:10px; height:10px; border-radius:50%; background:${i===page?'#F4D03F':'rgba(255,255,255,0.2)'}; cursor:pointer; transition:background 0.3s;`;
-    dot.onclick = () => showDegreeSubPage(i);
-    nav.appendChild(dot);
-  });
+  const stageWrap = document.querySelector('.stage-wrap');
+  if (stageWrap) stageWrap.style.display = 'none';
 
-  if (page === 1) {
-    // ── Page 1 : layout deux colonnes ──
-    const layout = document.createElement('div');
-    layout.style.cssText = 'display:flex; gap:24px; align-items:flex-start; justify-content:center; width:100%; max-width:900px; flex-wrap:wrap;';
-
-    // Colonne gauche : texte + cartes
-    const left = document.createElement('div');
-    left.style.cssText = 'flex:1; min-width:280px; max-width:480px;';
-
-    const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
-      <p>Les degrés d'une tonalité correspondent à la <strong style="color:#F4D03F">position de la note dans la gamme</strong>.</p>
-      <p>Ils sont identiques aux numéros des étages d'un immeuble — des repères dans l'espace musical, comme des marches d'escalier ou les barreaux d'une échelle.</p>
-      <p style="margin-top:12px; color:#C8A0D8; font-style:italic;">Chaque note a un rôle.</p>
-    `);
-    s1.style.width = '100%';
-    s1.style.maxWidth = '100%';
-    s1.style.boxSizing = 'border-box';
-    left.appendChild(s1);
-
-    const cards = buildNoteCards();
-    cards.style.cssText += 'justify-content:flex-start; margin-top:8px; transform:scale(0.85); transform-origin:left center;';
-    left.appendChild(cards);
-
-    // Colonne droite : immeuble réduit
-    const right = document.createElement('div');
-    right.style.cssText = 'flex:0 0 auto; display:flex; align-items:flex-start; justify-content:center;';
-    const bldg = buildBuildingAnim();
-    bldg.style.transform = 'scale(0.8)';
-    bldg.style.transformOrigin = 'top center';
-    right.appendChild(bldg);
-
-    layout.appendChild(left);
-    layout.appendChild(right);
-    c.appendChild(layout);
-
-  } else if (page === 2) {
-    // ── Page 2 : 7 et 12 ──
-    const s2 = buildDegreeSection('7 notes · 7 jours · 12 notes · 12 mois', `
-      <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
-      <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
-      <p style="margin-top:12px; color:#85929E; font-style:italic;">Une belle analogie — rien de plus, rien de moins.</p>
-    `, '15px');
-    c.appendChild(s2);
-    c.appendChild(build7and12Anim());
-
-  } else if (page === 3) {
-    // Bouton Précédent en haut à gauche sur page 3
-    const btnPrevTop = document.createElement('button');
-    btnPrevTop.textContent = '← Précédent';
-    btnPrevTop.style.cssText = 'align-self:flex-start; background:rgba(255,255,255,0.1); color:#F5F0E8; border:1px solid rgba(255,255,255,0.25); border-radius:10px; padding:8px 20px; font-size:15px; cursor:pointer; margin-bottom:8px;';
-    btnPrevTop.onclick = () => showDegreeSubPage(2);
-    // ── Page 3 : Les modes ──
-    const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
-      <p>Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10...</p>
-      <p style="margin-top:8px;">C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
-    `);
-    c.appendChild(s3);
-    c.appendChild(buildModesAnim());
-
-    // Ligne interactive + bouton Précédent au même niveau
-    const btnPrev3 = document.createElement('button');
-    btnPrev3.id = 'degreePrev3';
-    btnPrev3.textContent = '← Précédent';
-    btnPrev3.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1A6B5A,#1A5276); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100; white-space:nowrap;';
-    btnPrev3.onclick = () => showDegreeSubPage(2);
-
-    const interactRow = document.createElement('div');
-    interactRow.style.cssText = 'display:flex; align-items:center; gap:16px; width:100%; max-width:700px; justify-content:center;';
-    interactRow.appendChild(buildInteractiveDegrees());
-    c.appendChild(interactRow);
-    document.body.appendChild(btnPrev3);
+  // Panneau texte fixe à droite
+  let panel = document.getElementById('degreePanel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'degreePanel';
+    panel.style.cssText = `
+      position:fixed; top:160px; right:20px; width:280px; z-index:50;
+      background:rgba(44,62,80,0.75); border-radius:14px;
+      padding:18px 20px; border:1px solid rgba(244,163,32,0.3);
+      backdrop-filter:blur(6px); font-family:Georgia,serif;
+    `;
+    panel.innerHTML = `
+      <div style="font-size:15px; font-weight:bold; color:#F4D03F; margin-bottom:12px; border-bottom:1px solid rgba(244,163,32,0.3); padding-bottom:8px;">Chaque note possède un nom et une fonction.</div>
+      <div style="font-size:15px; color:#D6EAF8; line-height:1.8;">
+        <p>Au-delà du <strong style="color:#F4D03F">nom</strong> qui caractérise la note — comme le prénom d'une personne — les notes ont aussi une <strong style="color:#48C9B0">valeur numérique</strong>.</p>
+        <p style="margin-top:8px;">Cette valeur caractérise leur <strong style="color:#F4D03F">fonction</strong> dans le groupe de notes au moment où elles sont jouées.</p>
+        <p style="margin-top:8px;">De la même manière que nous avons tous un prénom et un <strong style="color:#C8A0D8">rôle</strong> dans un groupe, une profession, une activité.</p>
+        <p style="margin-top:8px; color:#C8A0D8;">Cette fonction est essentielle pour comprendre le mouvement.</p>
+      </div>
+    `;
+    document.body.appendChild(panel);
   }
 
-  // Navigation Précédent / Suivant
-  c.appendChild(nav);
-  const btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex; gap:16px; justify-content:center; margin-top:12px; width:100%;';
+  // ── Section 1 : Les degrés comme étages ──
+  const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
+    <p>Les degrés d'une tonalité correspondent à la <strong style="color:#F4D03F">position de la note dans la gamme</strong>.</p>
+    <p>Ils sont identiques aux numéros des étages d'un immeuble — des repères dans l'espace musical, comme des marches d'escalier ou les barreaux d'une échelle.</p>
+  `);
+  c.appendChild(s1);
 
-  if (page === 2) {
-    // Page 2 : Précédent et Suivant fixed en bas, même style
-    const btnPrev2 = document.createElement('button');
-    btnPrev2.textContent = '← Précédent';
-    btnPrev2.style.cssText = 'position:fixed; bottom:30px; left:calc(50% - 140px); background:linear-gradient(135deg,#1A6B5A,#1A5276); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
-    btnPrev2.onclick = () => showDegreeSubPage(1);
-    btnRow.appendChild(btnPrev2);
+  // Animation immeuble avec degrés
+  c.appendChild(buildBuildingAnim());
 
-    const btnNext2 = document.createElement('button');
-    btnNext2.textContent = 'Suivant →';
-    btnNext2.style.cssText = 'position:fixed; bottom:30px; left:calc(50% + 20px); background:linear-gradient(135deg,#1A5276,#1A6B5A); color:#fff; border:none; border-radius:10px; padding:12px 24px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
-    btnNext2.onclick = () => showDegreeSubPage(3);
-    btnRow.appendChild(btnNext2);
+  // ── Section 2 : 7 et 12 ──
+  const s2 = buildDegreeSection('📅 7 notes · 7 jours · 12 notes · 12 mois', `
+    <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
+    <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
+    <p style="color:#D6EAF8; margin-top:8px;">Ce n'est pas un hasard — la musique et le temps partagent les mêmes structures.</p>
+  `);
+  c.appendChild(s2);
+  c.appendChild(build7and12Anim());
 
-  } else if (page === 1) {
-    const btnNext = document.createElement('button');
-    btnNext.textContent = 'Suivant →';
-    btnNext.style.cssText = 'position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1A5276,#1A6B5A); color:#fff; border:none; border-radius:10px; padding:12px 32px; font-size:16px; font-family:Inter,sans-serif; font-weight:bold; cursor:pointer; z-index:100;';
-    btnNext.onclick = () => showDegreeSubPage(2);
-    btnRow.appendChild(btnNext);
-  }
-  c.appendChild(btnRow);
+  // ── Section 3 : La rue et l'immeuble ──
+  const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
+    <p>Imaginez une rue étroite. Vue depuis la rue, vous avez une certaine vision. Montez au <strong style="color:#F4D03F">1er étage</strong> — la même rue, mais une autre perspective. Au <strong style="color:#F4D03F">2ème étage</strong> — encore différente.</p>
+    <p>En musique c'est pareil. Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10... C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
+    <p style="color:#D6EAF8; margin-top:8px;">C'est pour ça qu'avec si peu de notes on peut faire autant de musique.</p>
+  `);
+  c.appendChild(s3);
+  c.appendChild(buildModesAnim());
+
+  // ── Section 4 : Carte d'identité de la note ──
+  const s4 = buildDegreeSection('🪪 Chaque note a une identité', `
+    <p>Une note c'est comme une personne — elle a un <strong style="color:#F4D03F">prénom</strong> (Do, Ré, Mi...) et un <strong style="color:#48C9B0">rôle</strong> (1, 2, 3...) dans le groupe.</p>
+    <p>Cette valeur numérique caractérise sa <strong style="color:#F4D03F">fonction</strong> au moment où elle est jouée. Et elle est toujours accompagnée d'une <strong style="color:#C8A0D8">valeur dans le temps</strong> — noire = 1 temps, blanche = 2 temps, croche = ½ temps.</p>
+  `);
+  c.appendChild(s4);
+  c.appendChild(buildNoteCards());
+
+  // ── Section 5 : Interactif ──
+  const s5 = buildDegreeSection('🎹 Clique sur une note', `
+    <p style="color:#D6EAF8; font-style:italic;">Clique sur une note pour voir sa carte d'identité.</p>
+  `);
+  c.appendChild(s5);
+  c.appendChild(buildInteractiveDegrees());
 }
 
-function buildDegreeSection(title, html, titleSize) {
+function buildDegreeSection(title, html) {
   const div = document.createElement('div');
   div.style.cssText = `
     width:680px; max-width:95vw;
@@ -3677,8 +3833,8 @@ function buildDegreeSection(title, html, titleSize) {
     backdrop-filter:blur(4px);
   `;
   div.innerHTML = `
-    <div style="font-size:${titleSize||'19px'}; font-weight:bold; color:#F4D03F; font-family:'Inter',Arial,sans-serif; margin-bottom:12px;">${title}</div>
-    <div style="font-size:16px; color:#D6EAF8; font-family:'Inter',Arial,sans-serif; line-height:1.8;">${html}</div>
+    <div style="font-size:19px; font-weight:bold; color:#F4D03F; font-family:Georgia,serif; margin-bottom:12px;">${title}</div>
+    <div style="font-size:16px; color:#D6EAF8; font-family:Georgia,serif; line-height:1.8;">${html}</div>
   `;
   return div;
 }
@@ -3692,11 +3848,6 @@ function buildBuildingAnim() {
   // Immeuble
   const building = document.createElement('div');
   building.style.cssText = 'display:flex; flex-direction:column-reverse; gap:3px;';
-  // Rez-de-chaussée ajouté en premier = affiché en bas avec column-reverse
-  const rdc = document.createElement('div');
-  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
-  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
-  building.appendChild(rdc);
   for (let i = 0; i < 7; i++) {
     const floor = document.createElement('div');
     floor.style.cssText = `
@@ -3714,6 +3865,11 @@ function buildBuildingAnim() {
     floor.onmouseleave = () => { floor.style.background = i===0?'rgba(242,169,138,0.7)':'rgba(44,62,80,0.7)'; floor.style.transform = ''; };
     building.appendChild(floor);
   }
+  // Rez-de-chaussée
+  const rdc = document.createElement('div');
+  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
+  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
+  building.appendChild(rdc);
 
   // Ascenseur animé
   const lift = document.createElement('div');
@@ -3816,7 +3972,7 @@ function buildModesAnim() {
 
 function buildNoteCards() {
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex; gap:5px; justify-content:flex-start; margin:8px 0 16px; flex-wrap:nowrap;';
+  wrap.style.cssText = 'display:flex; gap:8px; justify-content:center; margin:8px 0 16px; flex-wrap:wrap;';
   const notes = ['Do','Ré','Mi','Fa','Sol','La','Si'];
   const colors = ['#F2A98A','#F4C08A','#F5E08A','#90D4A0','#90B8F0','#A8A0E0','#C8A0D8'];
   const durations = ['♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t','♩ 1t'];
@@ -3824,7 +3980,7 @@ function buildNoteCards() {
     const card = document.createElement('div');
     card.style.cssText = `
       background:rgba(44,62,80,0.7); border:1px solid ${colors[i]}66;
-      border-radius:10px; padding:8px 4px; text-align:center; width:60px;
+      border-radius:10px; padding:10px 8px; text-align:center; width:72px;
       transition:transform 0.2s; cursor:default;
     `;
     card.innerHTML = `
