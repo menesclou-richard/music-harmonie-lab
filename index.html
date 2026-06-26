@@ -353,10 +353,8 @@
   .ineck-s6 .ineck-cell::before { height:3px; background:linear-gradient(90deg,#A0A0A0,#808080); }
   .ineck-dot { width:12px; height:12px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:5px; font-weight:700; color:#fff; z-index:3; position:relative; border:1px solid rgba(255,255,255,0.4); box-shadow:0 1px 3px rgba(0,0,0,0.6); }
   .ineck-dot.tonic { width:14px; height:14px; border:1.5px solid #fff; box-shadow:0 0 6px rgba(255,255,255,0.5); }
-  @keyframes scrollBounce {
-    0%,100% { transform:translateY(0); opacity:0.7; }
-    50%      { transform:translateY(5px); opacity:1; }
-  }
+  @keyframes neckBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  @keyframes scrollBounce { 0%,100%{transform:translateY(0); opacity:0.7} 50%{transform:translateY(6px); opacity:1} }
   .ineck-dot { animation:neckBounce 1.2s ease-in-out infinite; }
 
 
@@ -3755,15 +3753,33 @@ function buildDegreesLevel() {
   c.style.overflowY = 'auto';
   c.style.maxHeight = '80vh';
   c.style.paddingBottom = '60px';
-  c.style.paddingTop = '10px';
-  c.style.position = 'relative';
+  c.style.paddingTop = '20px';
 
   const stageWrap = document.querySelector('.stage-wrap');
   if (stageWrap) stageWrap.style.display = 'none';
 
-  // Supprimer l'ancien panneau fixe s'il existe
-  const oldPanel = document.getElementById('degreePanel');
-  if (oldPanel) oldPanel.remove();
+  // Panneau texte fixe à droite
+  let panel = document.getElementById('degreePanel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'degreePanel';
+    panel.style.cssText = `
+      position:fixed; top:160px; right:20px; width:280px; z-index:50;
+      background:rgba(44,62,80,0.75); border-radius:14px;
+      padding:18px 20px; border:1px solid rgba(244,163,32,0.3);
+      backdrop-filter:blur(6px); font-family:Georgia,serif;
+    `;
+    panel.innerHTML = `
+      <div style="font-size:15px; font-weight:bold; color:#F4D03F; margin-bottom:12px; border-bottom:1px solid rgba(244,163,32,0.3); padding-bottom:8px;">Chaque note possède un nom et une fonction.</div>
+      <div style="font-size:15px; color:#D6EAF8; line-height:1.8;">
+        <p>Au-delà du <strong style="color:#F4D03F">nom</strong> qui caractérise la note — comme le prénom d'une personne — les notes ont aussi une <strong style="color:#48C9B0">valeur numérique</strong>.</p>
+        <p style="margin-top:8px;">Cette valeur caractérise leur <strong style="color:#F4D03F">fonction</strong> dans le groupe de notes au moment où elles sont jouées.</p>
+        <p style="margin-top:8px;">De la même manière que nous avons tous un prénom et un <strong style="color:#C8A0D8">rôle</strong> dans un groupe, une profession, une activité.</p>
+        <p style="margin-top:8px; color:#C8A0D8;">Cette fonction est essentielle pour comprendre le mouvement.</p>
+      </div>
+    `;
+    document.body.appendChild(panel);
+  }
 
   // ── Section 1 : Les degrés comme étages ──
   const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
@@ -3779,16 +3795,14 @@ function buildDegreesLevel() {
   const s2 = buildDegreeSection('📅 7 notes · 7 jours · 12 notes · 12 mois', `
     <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
     <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
-    <p style="color:#D6EAF8; margin-top:8px;">Ce n'est pas un hasard — la musique et le temps partagent les mêmes structures.</p>
+    <p style="color:#85929E; font-style:italic; margin-top:8px;">Une belle analogie — rien de plus, rien de moins.</p>
   `);
   c.appendChild(s2);
   c.appendChild(build7and12Anim());
 
   // ── Section 3 : La rue et l'immeuble ──
   const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
-    <p>Imaginez une rue étroite. Vue depuis la rue, vous avez une certaine vision. Montez au <strong style="color:#F4D03F">1er étage</strong> — la même rue, mais une autre perspective. Au <strong style="color:#F4D03F">2ème étage</strong> — encore différente.</p>
-    <p>En musique c'est pareil. Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10... C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
-    <p style="color:#D6EAF8; margin-top:8px;">C'est pour ça qu'avec si peu de notes on peut faire autant de musique.</p>
+    <p>Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10... C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
   `);
   c.appendChild(s3);
   c.appendChild(buildModesAnim());
@@ -3807,35 +3821,31 @@ function buildDegreesLevel() {
   `);
   c.appendChild(s5);
   c.appendChild(buildInteractiveDegrees());
-
-  // Indicateur de scroll
   addScrollIndicator(c);
 }
 
 function addScrollIndicator(container) {
-  // Dégradé en bas
   const fade = document.createElement('div');
   fade.style.cssText = `
-    position:sticky; bottom:0; left:0; right:0;
-    height:60px; pointer-events:none;
-    background:linear-gradient(to bottom, transparent, rgba(40,55,70,0.95));
+    position:sticky; bottom:0; left:0; right:0; width:100%;
+    height:70px; pointer-events:none;
+    background:linear-gradient(to bottom, transparent, rgba(35,50,65,0.96));
     display:flex; align-items:flex-end; justify-content:center;
-    padding-bottom:8px;
+    padding-bottom:10px;
   `;
-  // Flèche animée
   const arrow = document.createElement('div');
-  arrow.innerHTML = '↓';
+  arrow.innerHTML = '▼';
   arrow.style.cssText = `
-    color:#F4D03F; font-size:20px;
-    animation:scrollBounce 1.2s ease-in-out infinite;
+    color:#F4D03F; font-size:22px;
+    animation:scrollBounce 1s ease-in-out infinite;
+    text-shadow:0 0 8px rgba(244,211,63,0.6);
   `;
   fade.appendChild(arrow);
   container.appendChild(fade);
-
-  // Masquer la flèche quand on arrive en bas
   container.addEventListener('scroll', () => {
-    const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 20;
+    const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 30;
     fade.style.opacity = atBottom ? '0' : '1';
+    fade.style.transition = 'opacity 0.3s';
   });
 }
 
