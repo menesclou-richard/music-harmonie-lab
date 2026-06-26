@@ -3761,7 +3761,7 @@ function buildDegreesLevel() {
   c.style.alignItems = 'center';
   c.style.gap = '0px';
   c.style.overflowY = 'auto';
-  c.style.maxHeight = '80vh';
+  c.style.maxHeight = '85vh';
   c.style.webkitOverflowScrolling = 'touch';
   c.style.paddingBottom = '80px';
   c.style.paddingTop = '30px';
@@ -3870,6 +3870,11 @@ function buildBuildingAnim() {
   // Immeuble
   const building = document.createElement('div');
   building.style.cssText = 'display:flex; flex-direction:column-reverse; gap:3px;';
+  // RDC en premier = affiché en bas avec column-reverse
+  const rdc = document.createElement('div');
+  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
+  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
+  building.appendChild(rdc);
   for (let i = 0; i < 7; i++) {
     const floor = document.createElement('div');
     floor.style.cssText = `
@@ -3887,11 +3892,6 @@ function buildBuildingAnim() {
     floor.onmouseleave = () => { floor.style.background = i===0?'rgba(242,169,138,0.7)':'rgba(44,62,80,0.7)'; floor.style.transform = ''; };
     building.appendChild(floor);
   }
-  // Rez-de-chaussée
-  const rdc = document.createElement('div');
-  rdc.style.cssText = 'width:120px; height:20px; background:rgba(255,255,255,0.1); border-radius:4px; display:flex; align-items:center; justify-content:center;';
-  rdc.innerHTML = '<span style="color:#85929E; font-size:13px;">Rez-de-chaussée</span>';
-  building.appendChild(rdc);
 
   // Ascenseur animé
   const lift = document.createElement('div');
