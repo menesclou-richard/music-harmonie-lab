@@ -353,7 +353,10 @@
   .ineck-s6 .ineck-cell::before { height:3px; background:linear-gradient(90deg,#A0A0A0,#808080); }
   .ineck-dot { width:12px; height:12px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:5px; font-weight:700; color:#fff; z-index:3; position:relative; border:1px solid rgba(255,255,255,0.4); box-shadow:0 1px 3px rgba(0,0,0,0.6); }
   .ineck-dot.tonic { width:14px; height:14px; border:1.5px solid #fff; box-shadow:0 0 6px rgba(255,255,255,0.5); }
-  @keyframes neckBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+  @keyframes scrollBounce {
+    0%,100% { transform:translateY(0); opacity:0.7; }
+    50%      { transform:translateY(5px); opacity:1; }
+  }
   .ineck-dot { animation:neckBounce 1.2s ease-in-out infinite; }
 
 
@@ -3751,33 +3754,16 @@ function buildDegreesLevel() {
   c.style.gap = '0px';
   c.style.overflowY = 'auto';
   c.style.maxHeight = '80vh';
-  c.style.paddingBottom = '40px';
+  c.style.paddingBottom = '60px';
+  c.style.paddingTop = '10px';
+  c.style.position = 'relative';
 
   const stageWrap = document.querySelector('.stage-wrap');
   if (stageWrap) stageWrap.style.display = 'none';
 
-  // Panneau texte fixe à droite
-  let panel = document.getElementById('degreePanel');
-  if (!panel) {
-    panel = document.createElement('div');
-    panel.id = 'degreePanel';
-    panel.style.cssText = `
-      position:fixed; top:160px; right:20px; width:280px; z-index:50;
-      background:rgba(44,62,80,0.75); border-radius:14px;
-      padding:18px 20px; border:1px solid rgba(244,163,32,0.3);
-      backdrop-filter:blur(6px); font-family:Georgia,serif;
-    `;
-    panel.innerHTML = `
-      <div style="font-size:15px; font-weight:bold; color:#F4D03F; margin-bottom:12px; border-bottom:1px solid rgba(244,163,32,0.3); padding-bottom:8px;">Chaque note possède un nom et une fonction.</div>
-      <div style="font-size:15px; color:#D6EAF8; line-height:1.8;">
-        <p>Au-delà du <strong style="color:#F4D03F">nom</strong> qui caractérise la note — comme le prénom d'une personne — les notes ont aussi une <strong style="color:#48C9B0">valeur numérique</strong>.</p>
-        <p style="margin-top:8px;">Cette valeur caractérise leur <strong style="color:#F4D03F">fonction</strong> dans le groupe de notes au moment où elles sont jouées.</p>
-        <p style="margin-top:8px;">De la même manière que nous avons tous un prénom et un <strong style="color:#C8A0D8">rôle</strong> dans un groupe, une profession, une activité.</p>
-        <p style="margin-top:8px; color:#C8A0D8;">Cette fonction est essentielle pour comprendre le mouvement.</p>
-      </div>
-    `;
-    document.body.appendChild(panel);
-  }
+  // Supprimer l'ancien panneau fixe s'il existe
+  const oldPanel = document.getElementById('degreePanel');
+  if (oldPanel) oldPanel.remove();
 
   // ── Section 1 : Les degrés comme étages ──
   const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
@@ -3821,6 +3807,36 @@ function buildDegreesLevel() {
   `);
   c.appendChild(s5);
   c.appendChild(buildInteractiveDegrees());
+
+  // Indicateur de scroll
+  addScrollIndicator(c);
+}
+
+function addScrollIndicator(container) {
+  // Dégradé en bas
+  const fade = document.createElement('div');
+  fade.style.cssText = `
+    position:sticky; bottom:0; left:0; right:0;
+    height:60px; pointer-events:none;
+    background:linear-gradient(to bottom, transparent, rgba(40,55,70,0.95));
+    display:flex; align-items:flex-end; justify-content:center;
+    padding-bottom:8px;
+  `;
+  // Flèche animée
+  const arrow = document.createElement('div');
+  arrow.innerHTML = '↓';
+  arrow.style.cssText = `
+    color:#F4D03F; font-size:20px;
+    animation:scrollBounce 1.2s ease-in-out infinite;
+  `;
+  fade.appendChild(arrow);
+  container.appendChild(fade);
+
+  // Masquer la flèche quand on arrive en bas
+  container.addEventListener('scroll', () => {
+    const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 20;
+    fade.style.opacity = atBottom ? '0' : '1';
+  });
 }
 
 function buildDegreeSection(title, html) {
