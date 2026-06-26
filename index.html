@@ -1359,13 +1359,13 @@
   }
   /* Onglets plus grands sur mobile */
   .lvl-tab {
-    font-size: 13px !important;
-    padding: 6px 12px !important;
-    min-height: 36px !important;
+    font-size: 14px !important;
+    padding: 8px 14px !important;
+    min-height: 40px !important;
   }
   #levelTabs {
-    gap: 5px !important;
-    padding: 6px 4px !important;
+    gap: 6px !important;
+    padding: 8px 4px !important;
   }
 }
 </style>
@@ -3769,28 +3769,9 @@ function buildDegreesLevel() {
   const stageWrap = document.querySelector('.stage-wrap');
   if (stageWrap) stageWrap.style.display = 'none';
 
-  // Panneau texte fixe à droite
-  let panel = document.getElementById('degreePanel');
-  if (!panel) {
-    panel = document.createElement('div');
-    panel.id = 'degreePanel';
-    panel.style.cssText = `
-      position:fixed; top:160px; right:20px; width:280px; z-index:50;
-      background:rgba(44,62,80,0.75); border-radius:14px;
-      padding:18px 20px; border:1px solid rgba(244,163,32,0.3);
-      backdrop-filter:blur(6px); font-family:Georgia,serif;
-    `;
-    panel.innerHTML = `
-      <div style="font-size:15px; font-weight:bold; color:#F4D03F; margin-bottom:12px; border-bottom:1px solid rgba(244,163,32,0.3); padding-bottom:8px;">Chaque note possède un nom et une fonction.</div>
-      <div style="font-size:15px; color:#D6EAF8; line-height:1.8;">
-        <p>Au-delà du <strong style="color:#F4D03F">nom</strong> qui caractérise la note — comme le prénom d'une personne — les notes ont aussi une <strong style="color:#48C9B0">valeur numérique</strong>.</p>
-        <p style="margin-top:8px;">Cette valeur caractérise leur <strong style="color:#F4D03F">fonction</strong> dans le groupe de notes au moment où elles sont jouées.</p>
-        <p style="margin-top:8px;">De la même manière que nous avons tous un prénom et un <strong style="color:#C8A0D8">rôle</strong> dans un groupe, une profession, une activité.</p>
-        <p style="margin-top:8px; color:#C8A0D8;">Cette fonction est essentielle pour comprendre le mouvement.</p>
-      </div>
-    `;
-    document.body.appendChild(panel);
-  }
+  // Supprimer le panneau fixe s'il existe
+  const oldPanel = document.getElementById('degreePanel');
+  if (oldPanel) oldPanel.remove();
 
   // ── Section 1 : Les degrés comme étages ──
   const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
