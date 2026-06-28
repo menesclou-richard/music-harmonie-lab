@@ -355,6 +355,7 @@
   .ineck-dot.tonic { width:14px; height:14px; border:1.5px solid #fff; box-shadow:0 0 6px rgba(255,255,255,0.5); }
   @keyframes neckBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
   @keyframes scrollBounce { 0%,100%{transform:translateY(0); opacity:0.7} 50%{transform:translateY(6px); opacity:1} }
+  @keyframes barPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .ineck-dot { animation:neckBounce 1.2s ease-in-out infinite; }
 
 
@@ -2669,6 +2670,15 @@ function checkAnswer(chosen, choices) {
 function switchLevel(val) {
   level = parseInt(val);
   stopIntervalAnim();
+  // Supprimer les indicateurs de scroll si présents
+  ['scrollIndicator','scrollProgress','scrollDots','scrollSection','scrollArrow'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+  if (window._degreeScrollHandler) {
+    window.removeEventListener('scroll', window._degreeScrollHandler);
+    window._degreeScrollHandler = null;
+  }
   // Fermer les sous-pages si ouvertes
   closeSubPage();
   document.getElementById("levelSelect").value = val;
@@ -3774,28 +3784,36 @@ function buildDegreesLevel() {
   if (oldPanel) oldPanel.remove();
 
   // ── Section 1 : Les degrés comme étages ──
+  // Layout deux colonnes : immeuble à gauche, texte à droite
+  const row1 = document.createElement('div');
+  row1.style.cssText = 'display:flex; gap:16px; align-items:flex-start; width:100%; max-width:900px; flex-wrap:wrap;';
+
+  // Immeuble à gauche
+  const leftCol = document.createElement('div');
+  leftCol.style.cssText = 'flex-shrink:0;';
+  leftCol.appendChild(buildBuildingAnim());
+  row1.appendChild(leftCol);
+
+  // Texte à droite
+  const rightCol = document.createElement('div');
+  rightCol.style.cssText = 'flex:1; min-width:200px;';
   const s1 = buildDegreeSection('🏢 Les degrés comme étages', `
     <p>Les degrés d'une tonalité correspondent à la <strong style="color:#F4D03F">position de la note dans la gamme</strong>.</p>
     <p>Ils sont identiques aux numéros des étages d'un immeuble — des repères dans l'espace musical, comme des marches d'escalier ou les barreaux d'une échelle.</p>
   `);
-  c.appendChild(s1);
+  s1.style.width = '100%';
+  rightCol.appendChild(s1);
+  row1.appendChild(rightCol);
 
-  // Animation immeuble avec degrés
-  c.appendChild(buildBuildingAnim());
+  c.appendChild(row1);
 
-  // ── Section 2 : 7 et 12 ──
-  const s2 = buildDegreeSection('📅 7 notes · 7 jours · 12 notes · 12 mois', `
-    <p>Il y a <strong style="color:#F4D03F">7 jours dans la semaine</strong> et <strong style="color:#F4D03F">7 notes dans la gamme</strong>.</p>
-    <p>Il y a <strong style="color:#48C9B0">12 mois dans l'année</strong> et <strong style="color:#48C9B0">12 notes au total</strong> (la gamme chromatique).</p>
-    <p style="color:#85929E; font-style:italic; margin-top:8px;">Une belle analogie — rien de plus, rien de moins.</p>
-  `);
-  c.appendChild(s2);
-  c.appendChild(build7and12Anim());
-
-  // ── Section 3 : La rue et l'immeuble ──
+  // ── Section 3 : La vue change selon l'étage ──
   const s3 = buildDegreeSection('🪟 La vue change selon l\'étage', `
     <p>Les 7 degrés peuvent être vus depuis différents points de départ. Au lieu de compter 1→7, on peut compter 2→9, ou 3→10... C'est l'idée des <strong style="color:#C8A0D8">modes musicaux</strong>.</p>
   `);
+  s3.style.marginTop = '-64px';
+  s3.style.marginLeft = 'auto';
+  s3.style.width = 'calc(100% - 220px)';
   c.appendChild(s3);
   c.appendChild(buildModesAnim());
 
@@ -3817,32 +3835,74 @@ function buildDegreesLevel() {
 }
 
 function addScrollIndicator(container) {
-  const fade = document.createElement('div');
-  fade.style.cssText = `
-    position:sticky; bottom:0; left:0; right:0; width:100%;
-    height:80px; pointer-events:none;
-    background:linear-gradient(to bottom, transparent, rgba(35,50,65,0.97));
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
-    padding-bottom:10px; gap:2px;
-  `;
-  const msg = document.createElement('div');
-  msg.textContent = 'Faites défiler pour voir la suite';
-  msg.style.cssText = 'color:rgba(244,211,63,0.8); font-size:12px; font-family:Inter,sans-serif; letter-spacing:0.5px;';
-  const arrow = document.createElement('div');
-  arrow.innerHTML = '▼';
-  arrow.style.cssText = `
-    color:#F4D03F; font-size:18px;
-    animation:scrollBounce 1s ease-in-out infinite;
-    text-shadow:0 0 8px rgba(244,211,63,0.6);
-  `;
-  fade.appendChild(msg);
-  fade.appendChild(arrow);
-  container.appendChild(fade);
-  container.addEventListener('scroll', () => {
-    const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 30;
-    fade.style.opacity = atBottom ? '0' : '1';
-    fade.style.transition = 'opacity 0.3s';
+  ['scrollIndicator','scrollProgress','scrollDots','scrollSection','scrollArrow'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
   });
+  if (window._degreeScrollHandler) {
+    window.removeEventListener('scroll', window._degreeScrollHandler);
+    window._degreeScrollHandler = null;
+  }
+
+  container.style.boxShadow = 'inset 0 -40px 30px -10px rgba(30,45,60,0.8)';
+
+  // Barre YouTube
+  const bar = document.createElement('div');
+  bar.id = 'scrollProgress';
+  bar.style.cssText = 'position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,#F4D03F,#E8A835);z-index:9999;border-radius:0 2px 2px 0;transition:width 0.1s;pointer-events:none;box-shadow:0 0 8px rgba(244,208,63,0.6);';
+  document.body.appendChild(bar);
+  bar.style.width = '15%';
+  bar.style.animation = 'barPulse 0.8s ease-in-out 2';
+  setTimeout(() => { bar.style.animation = ''; bar.style.width = '0%'; }, 1800);
+
+  // Numéro de section
+  const sections = ['Les degrés & modes','Identité des notes'];
+  const sectionLabel = document.createElement('div');
+  sectionLabel.id = 'scrollSection';
+  sectionLabel.style.cssText = 'position:fixed;top:6px;right:12px;color:#F4D03F;font-size:11px;font-family:Inter,sans-serif;font-weight:600;z-index:9999;pointer-events:none;opacity:0;transition:opacity 0.3s;text-shadow:0 1px 4px rgba(0,0,0,0.8);';
+  document.body.appendChild(sectionLabel);
+
+  // Points
+  const dots = document.createElement('div');
+  dots.id = 'scrollDots';
+  dots.style.cssText = 'position:fixed;right:8px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:9999;pointer-events:none;';
+  const dotEls = sections.map((s, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = `width:${i===0?'10px':'8px'};height:${i===0?'10px':'8px'};border-radius:50%;background:${i===0?'#F4D03F':'rgba(255,255,255,0.3)'};transition:all 0.3s;border:1px solid rgba(255,255,255,0.3);`;
+    dots.appendChild(d);
+    return d;
+  });
+  document.body.appendChild(dots);
+
+  // Flèche animée en bas à droite
+  const arrow = document.createElement('div');
+  arrow.id = 'scrollArrow';
+  arrow.innerHTML = '▼';
+  arrow.style.cssText = 'position:fixed;bottom:30px;right:20px;color:#F4D03F;font-size:22px;z-index:9999;pointer-events:none;animation:scrollBounce 1s ease-in-out infinite;text-shadow:0 0 10px rgba(244,208,63,0.8);';
+  document.body.appendChild(arrow);
+
+  // Scroll sur le CONTENEUR
+  const onScroll = () => {
+    const scrolled = container.scrollTop;
+    const total = container.scrollHeight - container.clientHeight;
+    const pct = total > 0 ? scrolled / total : 0;
+    bar.style.width = (pct * 100) + '%';
+    sectionLabel.style.opacity = scrolled > 20 ? '1' : '0';
+    arrow.style.opacity = pct > 0.9 ? '0' : '1';
+    arrow.style.transition = 'opacity 0.3s';
+    container.style.boxShadow = pct > 0.95 ? 'none' : 'inset 0 -40px 30px -10px rgba(30,45,60,0.8)';
+    const sectionH = total / sections.length;
+    const activeIdx = Math.min(Math.floor(scrolled / sectionH), sections.length - 1);
+    sectionLabel.textContent = (activeIdx+1) + ' / ' + sections.length + ' · ' + sections[activeIdx];
+    dotEls.forEach((d, i) => {
+      const active = i === activeIdx;
+      d.style.background = active ? '#F4D03F' : 'rgba(255,255,255,0.3)';
+      d.style.width = d.style.height = active ? '10px' : '8px';
+      d.style.boxShadow = active ? '0 0 6px rgba(244,208,63,0.6)' : 'none';
+    });
+  };
+  container.addEventListener('scroll', onScroll);
+  window._degreeScrollHandler = onScroll;
 }
 
 function buildDegreeSection(title, html) {
