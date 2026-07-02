@@ -11,7 +11,7 @@
   html, body { height: 100%; overflow: hidden; }
   body {
     font-family: 'Inter', Arial, sans-serif;
-    background: #424A5C;
+    background: #0d1b2a;
     color: #E6EDF3;
     margin: 0;
     padding: 52px 15px 4px;
@@ -46,6 +46,14 @@
     88%  { opacity: var(--maxop, 0.2); }
     100% { transform: translate(var(--dx, 40px), -105vh) rotate(var(--rot, -20deg)); opacity: 0; }
   }
+  /* ── Lisibilité texte sur tous les fonds bleus (clair à foncé) ── */
+  #introScreen *, #numerosScreen *, #motsIntroScreen *, #motsRetourScreen *,
+  #motsAltIntroScreen *, #douzeNotesScreen *, #motsAltRetourScreen * {
+    text-shadow: 0 1px 4px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.3);
+  }
+  /* Exception : ne pas appliquer sur les éléments SVG ni les boutons colorés */
+  #introScreen svg *, #numerosScreen svg * { text-shadow: none; }
+
   .float-note {
     position: fixed;
     font-size: var(--size, 18px);
@@ -94,48 +102,7 @@
     0%   { transform: translateY(0);     opacity: 0.5; }
     100% { transform: translateY(-40px); opacity: 0; }
   }
-  @keyframes keyFloat {
-    0%   { transform: translate(0, 0) rotate(0deg);    opacity:0; }
-    15%  { transform: translate(0, -8px) rotate(5deg); opacity:1; }
-    30%  { transform: translate(-5px, -4px) rotate(-3deg); opacity:1; }
-    50%  { transform: translate(-10px, -30px) rotate(-15deg); opacity:1; }
-    70%  { transform: translate(-15px, -40px) rotate(-20deg); opacity:1; }
-    85%  { transform: translate(-20px, -42px) rotate(-20deg); opacity:1; }
-    100% { transform: translate(-25px, -42px) rotate(-20deg); opacity:0; }
-  }
-  @keyframes keyTurn {
-    0%   { transform: translate(-25px,-42px) rotate(-20deg); opacity:1; }
-    60%  { transform: translate(-25px,-42px) rotate(70deg);  opacity:1; }
-    100% { transform: translate(-25px,-42px) rotate(70deg);  opacity:0; }
-  }
-    0%,100% { transform:translate(-50%,-50%) rotate(0deg); }
-    25%  { transform:translate(-50%,-50%) rotate(-2deg); }
-    75%  { transform:translate(-50%,-50%) rotate(2deg); }
-  }
-  @keyframes chestOpen {
-    0%   { transform:rotate(0deg); transform-origin: center bottom; }
-    100% { transform:rotate(-110deg); transform-origin: center bottom; }
-  }
-  @keyframes chestGlow {
-    0%   { opacity:0; transform:scaleY(0); }
-    100% { opacity:1; transform:scaleY(1); }
-  }
-  @keyframes bookRise {
-    0%   { transform:translate(-50%, 60px) scale(0.05); opacity:0; }
-    15%  { transform:translate(-50%, 40px) scale(0.08); opacity:1; }
-    40%  { transform:translate(-50%, 0px)  scale(0.35); opacity:1; }
-    70%  { transform:translate(-50%, -80px) scale(0.75); opacity:1; }
-    100% { transform:translate(-50%, -120px) scale(1);   opacity:1; }
-  }
-  @keyframes chestFade {
-    0%   { opacity:1; }
-    100% { opacity:0; transform:translate(-50%,-50%) scale(0.8); }
-  }
-  @keyframes chestShake {
-    0%,100% { transform:translate(-50%,-50%) rotate(0deg); }
-    25%     { transform:translate(calc(-50% - 4px),-50%) rotate(-2deg); }
-    75%     { transform:translate(calc(-50% + 4px),-50%) rotate(2deg); }
-  }
+
   /* Grain subtil */
   body::before {
     content: '';
@@ -163,8 +130,8 @@
 
   .top-name {
     position: fixed; top: 10px; left: 14px;
-    font-size: 14px; color: #1C2833; z-index: 60;
-    font-weight: bold; text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+    font-size: 14px; color: #8B949E; z-index: 60;
+    font-weight: normal; background: transparent;
   }
   .level-switcher {
     position: fixed; top: 8px; right: 12px;
@@ -625,514 +592,395 @@
 </div>
 
 <!-- ===== ÉCRAN D'INTRO ===== -->
-<div id="introScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(180deg, #2a4a6a 0%, #2e5070 35%, #3a5e6e 70%, #3a5440 100%); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; overflow:hidden;">
-
-<!-- ── Fond sous-marin animé ── -->
-<svg id="seaBg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"
-  style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;">
-  <defs>
-    <!-- Lumière qui remonte depuis le fond -->
-    <radialGradient id="seaLight" cx="50%" cy="100%" r="70%">
-      <stop offset="0%"   stop-color="#6ABFE4" stop-opacity="0.28"/>
-      <stop offset="60%"  stop-color="#3A8AAA" stop-opacity="0.14"/>
-      <stop offset="100%" stop-color="#2a4a6a"  stop-opacity="0"/>
-    </radialGradient>
-    <!-- Lueur du coffre -->
-    <radialGradient id="chestGlowGrad" cx="50%" cy="85%" r="25%">
-      <stop offset="0%"   stop-color="#F4D03F" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#F4D03F" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-
-  <!-- Fond dégradé sous-marin -->
-  <rect width="1200" height="700" fill="url(#seaLight)"/>
-  <rect width="1200" height="700" fill="url(#chestGlowGrad)"/>
-
-  <!-- Sable du fond -->
-  <ellipse cx="600" cy="720" rx="900" ry="80" fill="#3a2e1a" opacity="0.5"/>
-  <ellipse cx="600" cy="710" rx="700" ry="50" fill="#4a3a22" opacity="0.35"/>
-
-  <!-- ── Algues gauche ── -->
-  <g style="transform-origin:80px 700px; animation:seaWeed1 4s ease-in-out infinite;">
-    <path d="M80,700 Q65,650 80,610 Q95,570 75,530 Q60,490 78,455" fill="none" stroke="#2D6A4F" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
-    <path d="M90,700 Q110,660 92,620 Q75,580 95,545" fill="none" stroke="#40916C" stroke-width="3.5" stroke-linecap="round" opacity="0.6"/>
-  </g>
-  <g style="transform-origin:140px 700px; animation:seaWeed2 5.5s ease-in-out infinite;">
-    <path d="M140,700 Q122,648 138,600 Q154,555 135,515" fill="none" stroke="#1B4332" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
-  </g>
-
-  <!-- ── Algues droite ── -->
-  <g style="transform-origin:1120px 700px; animation:seaWeed2 4.8s ease-in-out infinite;">
-    <path d="M1120,700 Q1135,655 1118,612 Q1100,570 1122,532 Q1140,495 1118,460" fill="none" stroke="#2D6A4F" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
-    <path d="M1108,700 Q1090,658 1106,618 Q1122,580 1104,545" fill="none" stroke="#40916C" stroke-width="3.5" stroke-linecap="round" opacity="0.6"/>
-  </g>
-  <g style="transform-origin:1060px 700px; animation:seaWeed1 6s ease-in-out infinite;">
-    <path d="M1060,700 Q1075,650 1058,605 Q1042,562 1062,522" fill="none" stroke="#1B4332" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
-  </g>
-
-  <!-- ── Algues centre-gauche ── -->
-  <g style="transform-origin:320px 700px; animation:seaWeed1 5.2s 1s ease-in-out infinite;">
-    <path d="M320,700 Q308,660 322,628 Q336,596 318,565" fill="none" stroke="#40916C" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
-  </g>
-  <g style="transform-origin:880px 700px; animation:seaWeed2 4.6s 0.7s ease-in-out infinite;">
-    <path d="M880,700 Q892,658 876,620 Q860,582 878,550" fill="none" stroke="#2D6A4F" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
-  </g>
-
-  <!-- ── Bulles (CSS animation) ── -->
-  <circle class="sea-bubble" cx="200" cy="620" r="5"   fill="none" stroke="#ADE8F4" stroke-width="1.2" opacity="0.5" style="animation:seaBubble 5s 0s   ease-in infinite;"/>
-  <circle class="sea-bubble" cx="230" cy="580" r="3.5" fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.4" style="animation:seaBubble 4s 1.2s ease-in infinite;"/>
-  <circle class="sea-bubble" cx="185" cy="640" r="4"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.35" style="animation:seaBubble 6s 0.5s ease-in infinite;"/>
-  <circle class="sea-bubble" cx="960" cy="610" r="5"   fill="none" stroke="#ADE8F4" stroke-width="1.2" opacity="0.5" style="animation:seaBubble 4.5s 0.8s ease-in infinite;"/>
-  <circle class="sea-bubble" cx="980" cy="650" r="3"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.4" style="animation:seaBubble 5.5s 2s   ease-in infinite;"/>
-  <circle class="sea-bubble" cx="600" cy="630" r="4"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.3" style="animation:seaBubble 7s  0.3s ease-in infinite;"/>
-  <circle class="sea-bubble" cx="450" cy="600" r="3"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.35" style="animation:seaBubble 5.8s 1.8s ease-in infinite;"/>
-  <circle class="sea-bubble" cx="750" cy="590" r="4.5" fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.4" style="animation:seaBubble 4.8s 0.6s ease-in infinite;"/>
-
-  <!-- ── Rayon de lumière ── -->
-  <polygon points="540,0 660,0 720,700 480,700" fill="white" opacity="0.025" style="animation:seaRay 8s ease-in-out infinite;"/>
-  <polygon points="580,0 640,0 660,700 560,700" fill="white" opacity="0.018" style="animation:seaRay 8s 1.5s ease-in-out infinite;"/>
-
-  <!-- ── Poisson 1 (traverse de gauche à droite, en haut) ── -->
-  <g style="animation:fishSwim1 18s 2s linear infinite;">
-    <ellipse cx="0" cy="180" rx="18" ry="8" fill="#5BA8C4" opacity="0.55"/>
-    <polygon points="-18,180 -30,172 -30,188" fill="#5BA8C4" opacity="0.55"/>
-    <circle cx="6" cy="178" r="2.5" fill="#1a2a3a" opacity="0.7"/>
-    <line x1="-18" y1="180" x2="6" y2="180" stroke="#4A90B0" stroke-width="0.8" opacity="0.3"/>
-  </g>
-
-  <!-- ── Poisson 2 (traverse de droite à gauche, plus bas) ── -->
-  <g style="animation:fishSwim2 22s 6s linear infinite;">
-    <ellipse cx="1200" cy="420" rx="14" ry="6" fill="#C4875B" opacity="0.45"/>
-    <polygon points="1214,420 1226,414 1226,426" fill="#C4875B" opacity="0.45"/>
-    <circle cx="1194" cy="418" r="2" fill="#1a2a3a" opacity="0.7"/>
-  </g>
-
-  <!-- ── Poisson 3 (petit, en haut à droite) ── -->
-  <g style="animation:fishSwim3 14s 10s linear infinite;">
-    <ellipse cx="1200" cy="120" rx="10" ry="4.5" fill="#7AC4A8" opacity="0.4"/>
-    <polygon points="1210,120 1220,115 1220,125" fill="#7AC4A8" opacity="0.4"/>
-    <circle cx="1195" cy="119" r="1.5" fill="#1a2a3a" opacity="0.6"/>
-  </g>
-
-  <!-- ── Méduse (flotte doucement) ── -->
-  <g style="transform-origin:350px 300px; animation:jellyFloat 7s ease-in-out infinite;">
-    <ellipse cx="350" cy="290" rx="22" ry="14" fill="#D4A8E8" opacity="0.25"/>
-    <line x1="338" y1="302" x2="334" y2="330" stroke="#D4A8E8" stroke-width="1" opacity="0.2" style="animation:tentacle 3s 0s ease-in-out infinite;"/>
-    <line x1="344" y1="304" x2="341" y2="335" stroke="#D4A8E8" stroke-width="1" opacity="0.2" style="animation:tentacle 3s 0.4s ease-in-out infinite;"/>
-    <line x1="350" y1="304" x2="350" y2="338" stroke="#D4A8E8" stroke-width="1" opacity="0.2" style="animation:tentacle 3s 0.8s ease-in-out infinite;"/>
-    <line x1="356" y1="304" x2="358" y2="335" stroke="#D4A8E8" stroke-width="1" opacity="0.2" style="animation:tentacle 3s 1.2s ease-in-out infinite;"/>
-    <line x1="362" y1="302" x2="366" y2="330" stroke="#D4A8E8" stroke-width="1" opacity="0.2" style="animation:tentacle 3s 1.6s ease-in-out infinite;"/>
-  </g>
-
-  <!-- ── Étoile de mer sur le fond ── -->
-  <g style="transform-origin:900px 680px; animation:starSway 9s ease-in-out infinite;">
-    <polygon points="900,665 904,675 914,675 906,681 909,692 900,686 891,692 894,681 886,675 896,675" fill="#D4875B" opacity="0.4" transform="scale(0.8)  translate(112 130)"/>
-  </g>
-
-</svg>
-
-<!-- ── Notes musicales flottantes (Option D) ── -->
-<div class="float-note"       style="left:4%;  bottom:-5%; --size:14px; --dur:12s; --delay:0s;   --rot:18deg;  --maxop:0.18; --col:#E8A835;">♩</div>
-<div class="float-note-drift" style="left:9%;  bottom:-5%; --size:22px; --dur:16s; --delay:1.4s; --rot:-22deg; --maxop:0.14; --col:#C9A84C; --dx:-30px;">♫</div>
-<div class="float-note"       style="left:16%; bottom:-5%; --size:11px; --dur:10s; --delay:3.1s; --rot:30deg;  --maxop:0.20; --col:#D4B896;">♪</div>
-<div class="float-note-drift" style="left:23%; bottom:-5%; --size:18px; --dur:14s; --delay:0.7s; --rot:-15deg; --maxop:0.16; --col:#E8A835; --dx:25px;">♬</div>
-<div class="float-note"       style="left:31%; bottom:-5%; --size:13px; --dur:11s; --delay:5.2s; --rot:20deg;  --maxop:0.18; --col:#C9A84C;">𝄞</div>
-<div class="float-note-drift" style="left:38%; bottom:-5%; --size:20px; --dur:15s; --delay:2.3s; --rot:-28deg; --maxop:0.13; --col:#D4B896; --dx:-20px;">♩</div>
-<div class="float-note"       style="left:45%; bottom:-5%; --size:16px; --dur:13s; --delay:0.4s; --rot:22deg;  --maxop:0.17; --col:#E8A835;">♪</div>
-<div class="float-note-drift" style="left:53%; bottom:-5%; --size:12px; --dur:9s;  --delay:4.6s; --rot:-18deg; --maxop:0.21; --col:#C9A84C; --dx:35px;">♫</div>
-<div class="float-note"       style="left:60%; bottom:-5%; --size:24px; --dur:17s; --delay:1.9s; --rot:14deg;  --maxop:0.12; --col:#D4B896;">♬</div>
-<div class="float-note-drift" style="left:67%; bottom:-5%; --size:14px; --dur:11s; --delay:3.8s; --rot:-24deg; --maxop:0.19; --col:#E8A835; --dx:-28px;">♩</div>
-<div class="float-note"       style="left:74%; bottom:-5%; --size:19px; --dur:14s; --delay:0.9s; --rot:32deg;  --maxop:0.15; --col:#C9A84C;">𝄞</div>
-<div class="float-note-drift" style="left:81%; bottom:-5%; --size:11px; --dur:10s; --delay:6.1s; --rot:-16deg; --maxop:0.22; --col:#D4B896; --dx:22px;">♪</div>
-<div class="float-note"       style="left:88%; bottom:-5%; --size:21px; --dur:15s; --delay:2.7s; --rot:26deg;  --maxop:0.14; --col:#E8A835;">♫</div>
-<div class="float-note-drift" style="left:93%; bottom:-5%; --size:13px; --dur:12s; --delay:4.4s; --rot:-20deg; --maxop:0.18; --col:#C9A84C; --dx:-18px;">♬</div>
-<!-- ── Keyframes scène sous-marine ── -->
+<!-- ══════════════════════════════════════════════════════════════
+     ÉCRAN DE COUVERTURE  (z-index:3000, avant le profilage)
+════════════════════════════════════════════════════════════════ -->
 <style>
-@keyframes seaWeed1 {
-  0%,100% { transform: rotate(0deg); }
-  50%     { transform: rotate(6deg); }
+@keyframes coverFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+#coverScreen { animation: coverFadeIn 1s ease forwards; }
+#coverScreen .cover-inner {
+  width:100%; max-width:560px;
+  border-radius:16px;
+  padding:40px 32px 28px;
+  display:flex; flex-direction:column; align-items:center;
+  min-height:90vh; box-sizing:border-box;
+  position:relative; overflow:hidden;
+  cursor:pointer;
 }
-@keyframes seaWeed2 {
-  0%,100% { transform: rotate(0deg); }
-  50%     { transform: rotate(-7deg); }
+#coverScreen .wbg { position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:0.13; }
+#coverScreen .c-lbl { font-family:'Inter',sans-serif;font-size:13px;letter-spacing:8px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:16px;position:relative;font-weight:500;text-shadow:0 0 18px rgba(255,255,255,0.3); }
+#coverScreen .c-ttl { font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:64px;line-height:0.95;color:#fff;text-align:center;position:relative;margin-bottom:5px; }
+#coverScreen .c-sub { font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;font-style:italic;color:rgba(255,255,255,0.8);text-align:center;position:relative;margin-bottom:22px; }
+#coverScreen .c-words { display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;margin-bottom:0; }
+#coverScreen .c-row { display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:center; }
+#coverScreen .c-w { font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;font-style:italic; }
+#coverScreen .c-author { font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);position:relative;margin-top:14px;margin-bottom:20px; }
+#coverScreen .c-alts { display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:100%;position:relative;margin-top:auto; }
+#coverScreen .c-alt { aspect-ratio:1;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;font-weight:700; }
+#coverScreen .cs { background:rgba(244,162,97,0.32);color:#f4a261; }
+#coverScreen .cg { background:rgba(168,224,99,0.25);color:#a8e063; }
+#coverScreen .cy { background:rgba(249,224,75,0.25);color:#f9e04b; }
+#coverScreen .cw { background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.65); }
+#coverScreen .c-enter { font-family:'Inter',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.45);text-transform:uppercase;text-align:center;border-top:0.5px solid rgba(255,255,255,0.18);padding-top:13px;width:100%;position:relative;margin-top:14px; }
+#coverScreen .c-enter span { color:#f9e04b; }
+</style>
+
+<div id="coverScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:#1a3a5c;" onclick="closeCoverScreen()">
+
+  <div class="cover-inner" id="coverInner">
+    <svg class="wbg" viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M-10 58 C30 40, 80 72, 130 55 S230 30, 280 60 S370 88, 430 62" stroke="#fff" stroke-width="22" fill="none" stroke-linecap="round"/>
+      <path d="M-20 95 C20 112, 75 80, 140 100 S220 120, 290 92 S380 75, 440 100" stroke="#fff" stroke-width="14" fill="none" stroke-linecap="round"/>
+      <path d="M0 135 C50 118, 95 148, 160 132 S260 110, 320 138 S400 155, 430 140" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <path d="M-30 225 C25 195, 90 252, 155 228 S260 198, 330 235 S400 268, 460 238" stroke="#fff" stroke-width="28" fill="none" stroke-linecap="round"/>
+      <path d="M-15 298 C40 270, 100 315, 170 295 S275 268, 345 300 S415 328, 455 305" stroke="#fff" stroke-width="18" fill="none" stroke-linecap="round"/>
+      <path d="M10 375 C60 352, 120 388, 185 368 S290 342, 355 372 S415 398, 445 378" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round"/>
+      <path d="M-5 448 C45 428, 110 462, 175 442 S280 418, 350 448 S420 472, 445 452" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="c-lbl">Harmonie Musicale</div>
+    <div class="c-ttl">L'ordre<br>caché</div>
+    <div class="c-sub">de la musique</div>
+    <div class="c-words">
+      <div class="c-row">
+        <span class="c-w" style="color:#f4a261;">Intervalles</span>
+        <span class="c-w" style="color:#a8e063;">Gammes</span>
+        <span class="c-w" style="color:#f9e04b;">Accords</span>
+      </div>
+      <div class="c-row">
+        <span class="c-w" style="color:#f4a261;">Degrés</span>
+        <span class="c-w" style="color:#a8e063;">Improvisation</span>
+        <span class="c-w" style="color:#f9e04b;">Analyse</span>
+      </div>
+    </div>
+    <div class="c-author">Richard Menesclou · 2026</div>
+    <div class="c-alts">
+      <div class="c-alt cw">1</div><div class="c-alt cs">♭2</div><div class="c-alt cw">2</div><div class="c-alt cg">♭3</div>
+      <div class="c-alt cw">3</div><div class="c-alt cy">4</div><div class="c-alt cs">♭5</div><div class="c-alt cw">5</div>
+      <div class="c-alt cg">♭6</div><div class="c-alt cw">6</div><div class="c-alt cy">♭7</div><div class="c-alt cw">7</div>
+      <div class="c-alt cs">8</div><div class="c-alt cg">♭9</div><div class="c-alt cw">9</div><div class="c-alt cy">#9</div>
+      <div class="c-alt cw">10</div><div class="c-alt cs">11</div><div class="c-alt cg">#11</div><div class="c-alt cw">12</div>
+      <div class="c-alt cy">♭13</div><div class="c-alt cw">13</div><div class="c-alt cs">♭7</div><div class="c-alt cg">△7</div>
+    </div>
+    <div class="c-enter">Cliquez ou appuyez sur <span>Entrée</span> pour commencer</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ÉCRAN DE PROFILAGE — Wizard 3 étapes (z-index:2000)
+════════════════════════════════════════════════════════════════ -->
+<div id="profilScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#0f1e2e 0%,#1a2d42 50%,#0f1e2e 100%);z-index:9500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+
+  <div style="text-align:center;margin-bottom:32px;">
+    <div style="font-size:26px;font-weight:900;color:#F4D03F;font-family:Georgia,serif;letter-spacing:1px;">🎵 Harmonie Musicale</div>
+    <div style="font-size:15px;color:#FFFFFF;font-style:italic;font-family:Georgia,serif;margin-top:8px;">Bienvenue — comment vous appelle-t-on ?</div>
+  </div>
+
+  <div style="width:100%;max-width:400px;">
+    <input id="profilPrenom" type="text" placeholder="Votre prénom ou un pseudo…" maxlength="30" autocomplete="off"
+      style="width:100%;background:rgba(15,30,46,0.9);color:#fff;border:1.5px solid rgba(100,140,180,0.35);border-radius:12px;padding:16px 18px;font-size:20px;box-sizing:border-box;outline:none;font-family:Arial,sans-serif;transition:border-color 0.2s;text-align:center;"
+      onfocus="this.style.borderColor='rgba(244,208,63,0.6)'" onblur="this.style.borderColor='rgba(100,140,180,0.35)'"
+      onkeydown="if(event.key==='Enter') window.validerProfil()">
+    <div style="font-size:12px;color:#3a4e5e;text-align:center;margin-top:10px;font-family:Arial,sans-serif;">optionnel — vous pouvez laisser vide</div>
+  </div>
+
+  <button onclick="window.validerProfil()" style="margin-top:28px;background:linear-gradient(135deg,#C9A84C,#8B6914);color:#0D1117;border:none;padding:14px 40px;border-radius:22px;font-size:18px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;cursor:pointer;letter-spacing:0.5px;">Commencer →</button>
+
+  <div style="text-align:center;font-size:12px;color:#3a4e5e;margin-top:16px;font-family:Arial,sans-serif;">Ces informations restent uniquement sur votre appareil.</div>
+
+</div>
+
+<style>
+.avatar-btn {
+  background:rgba(28,40,51,0.7);
+  border:2px solid rgba(100,140,180,0.25);
+  border-radius:10px;
+  color:#D6EAF8;
+  font-size:22px;
+  padding:8px 12px;
+  cursor:pointer;
+  text-align:center;
+  min-width:64px;
+  line-height:1.4;
+  transition:border-color 0.2s, background 0.2s;
 }
-@keyframes seaBubble {
-  0%   { transform: translateY(0) scale(1);   opacity: 0.5; }
-  80%  { opacity: 0.4; }
-  100% { transform: translateY(-650px) scale(1.4); opacity: 0; }
+.avatar-btn span { font-size:11px; display:block; color:#85929E; }
+.avatar-btn.selected {
+  border-color:#F4D03F;
+  background:rgba(244,208,63,0.15);
+  color:#F4D03F;
 }
-@keyframes seaRay {
-  0%,100% { opacity: 0.018; }
-  50%     { opacity: 0.045; }
+.age-btn {
+  flex:1;
+  min-width:110px;
+  background:rgba(15,30,46,0.8);
+  border:2px solid rgba(100,140,180,0.25);
+  border-radius:10px;
+  color:#D6EAF8;
+  font-size:14px;
+  font-weight:bold;
+  padding:10px 8px;
+  cursor:pointer;
+  transition:border-color 0.2s, background 0.2s, transform 0.1s;
+  font-family:Arial,sans-serif;
 }
-@keyframes fishSwim1 {
-  0%   { transform: translateX(-60px); }
-  100% { transform: translateX(1320px); }
+.age-btn:hover { transform:scale(1.03); border-color:rgba(244,208,63,0.4); }
+.age-btn.selected {
+  border-color:#F4D03F;
+  background:rgba(244,208,63,0.15);
+  color:#F4D03F;
 }
-@keyframes fishSwim2 {
-  0%   { transform: translateX(60px) scaleX(-1); }
-  100% { transform: translateX(-1320px) scaleX(-1); }
+.motiv-btn {
+  background:rgba(15,30,46,0.8);
+  border:2px solid rgba(100,140,180,0.25);
+  border-radius:10px;
+  color:#D6EAF8;
+  font-size:13px;
+  font-weight:500;
+  padding:10px 8px;
+  cursor:pointer;
+  text-align:center;
+  transition:border-color 0.2s, background 0.2s, transform 0.1s;
+  font-family:Arial,sans-serif;
+  line-height:1.4;
 }
-@keyframes fishSwim3 {
-  0%   { transform: translateX(60px) scaleX(-1); }
-  100% { transform: translateX(-1320px) scaleX(-1); }
+.motiv-btn:hover { transform:scale(1.02); border-color:rgba(244,208,63,0.4); }
+.motiv-btn.selected {
+  border-color:#F4D03F;
+  background:rgba(244,208,63,0.15);
+  color:#F4D03F;
 }
-@keyframes jellyFloat {
-  0%,100% { transform: translateY(0) scale(1); }
-  40%     { transform: translateY(-18px) scale(1.05); }
-  70%     { transform: translateY(-8px) scale(0.97); }
+/* ── Mots-clés fondamentaux ── */
+.mot-cle {
+  color: #48C9B0;
+  font-weight: 600;
+  font-style: normal;
 }
-@keyframes tentacle {
-  0%,100% { transform: rotate(0deg); }
-  50%     { transform: rotate(12deg); }
-}
-@keyframes starSway {
-  0%,100% { transform: rotate(0deg); }
-  50%     { transform: rotate(15deg); }
+@keyframes motCleBlink {
+  0%,100% { opacity:1; text-shadow: 0 0 20px rgba(72,201,176,0.8); }
+  50%     { opacity:0.2; text-shadow: none; }
 }
 </style>
 
+<!-- ── Écran "Les numéros" — clavier chromatique, en deux temps : 7 notes puis 12 notes ── -->
+<div id="numerosScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 24px; box-sizing:border-box;">
+  <div onclick="window.skipIntroSequence && window.skipIntroSequence()" style="position:absolute; top:18px; right:22px; z-index:30; cursor:pointer; color:#FFFFFF; font-family:'Inter',Arial,sans-serif; font-size:13px; letter-spacing:0.5px; padding:6px 14px; border:1px solid rgba(110,132,148,0.4); border-radius:20px; transition:opacity 0.3s, color 0.3s; opacity:0.7;" onmouseover="this.style.opacity='1'; this.style.color='#E6D5B0';" onmouseout="this.style.opacity='0.7'; this.style.color='#6E8494';">Passer →</div>
+  <div style="width:100%; max-width:760px; text-align:center;">
+    <div id="numerosTitle" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:24px; font-weight:700; color:#E6D5B0; letter-spacing:1px; margin-bottom:8px; transition:opacity 0.4s;">L'univers musical comprend 7 notes principales</div>
+    <div id="numerosSubtitle" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:18px; font-style:italic; color:#FFFFFF; letter-spacing:0.5px; margin-bottom:20px; transition:opacity 0.4s;">Do, Ré, Mi, Fa, Sol, La, Si</div>
+    <div style="position:relative; width:100%; margin-bottom:24px;">
+      <svg id="numerosKeyboard" width="100%" height="158" viewBox="0 -23 700 158">
+        <g id="numerosWhiteKeys"></g>
+        <g id="numerosBlackKeys"></g>
+        <g id="numerosLabels"></g>
+        <g id="numerosLabelsAlt"></g>
+      </svg>
+    </div>
+    <div id="numerosGuitareIntro" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:15px; font-style:italic; color:#FFFFFF; letter-spacing:0.3px; text-align:center; margin-top:18px; margin-bottom:2px; transition:opacity 0.5s; opacity:0;">Sur la guitare aussi, chaque case correspond à une note — comme les touches du piano.</div>
+    <div style="width:100%; margin-top:8px;">
+      <svg width="100%" height="140" viewBox="0 0 900 140" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="20" width="68" height="92" rx="9" fill="#6B3A1A" stroke="#4A2010" stroke-width="1.5"/>
+        <circle cx="21" cy="24" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="37" cy="24" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="53" cy="24" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="21" cy="108" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="37" cy="108" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="53" cy="108" r="6" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <text x="37" y="68" text-anchor="middle" font-size="13" fill="#C8A040" font-family="Georgia,serif" font-style="italic" font-weight="bold" transform="rotate(-90, 37, 68)">Gibson</text>
+        <rect x="70" y="27" width="6" height="78" rx="1" fill="#D4B483"/>
+        <rect x="76" y="29" width="514" height="74" fill="#3A1E08"/>
+        <line x1="76"  y1="29" x2="76"  y2="103" stroke="#D4B483" stroke-width="4"/>
+        <line x1="115" y1="29" x2="115" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="153" y1="29" x2="153" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="190" y1="29" x2="190" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="224" y1="29" x2="224" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="256" y1="29" x2="256" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="287" y1="29" x2="287" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="317" y1="29" x2="317" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="345" y1="29" x2="345" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="372" y1="29" x2="372" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="397" y1="29" x2="397" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="421" y1="29" x2="421" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="444" y1="29" x2="444" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="466" y1="29" x2="466" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="487" y1="29" x2="487" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="507" y1="29" x2="507" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <line x1="590" y1="29" x2="590" y2="103" stroke="rgba(220,200,160,0.6)" stroke-width="2"/>
+        <circle cx="205" cy="66" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="271" cy="66" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="331" cy="66" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="386" cy="66" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="434" cy="53" r="4" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="434" cy="79" r="4" fill="rgba(255,255,255,0.15)"/>
+        <line x1="76" y1="39" x2="590" y2="39" stroke="#D8D8D8" stroke-width="1.3"/>
+        <line x1="76" y1="49" x2="590" y2="49" stroke="#D0D0D0" stroke-width="1.3"/>
+        <line x1="76" y1="59" x2="590" y2="59" stroke="#C0C0C0" stroke-width="2"/>
+        <line x1="76" y1="69" x2="590" y2="69" stroke="#B8B8B8" stroke-width="2"/>
+        <line x1="76" y1="79" x2="590" y2="79" stroke="#A8A8A8" stroke-width="2.5"/>
+        <line x1="76" y1="89" x2="590" y2="89" stroke="#989898" stroke-width="2.5"/>
+        <path d="M590,6 C575,6 561,13 556,26 C551,39 559,47 559,59 C559,71 549,77 547,89 C544,105 554,121 572,130 C590,138 615,140 648,138 C698,138 745,124 773,104 C793,89 801,69 796,51 C791,33 773,18 748,10 C726,4 689,0 648,3 Z" fill="#8B2020" stroke="#5C1010" stroke-width="2"/>
+        <path d="M594,10 C579,13 566,23 563,33 C560,43 565,51 565,59" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="4"/>
+        <path d="M617,41 C613,36 610,30 610,25 C610,20 613,17 616,15" fill="none" stroke="#5C0808" stroke-width="3.2"/>
+        <path d="M617,91 C613,97 610,103 610,108 C610,113 613,116 616,118" fill="none" stroke="#5C0808" stroke-width="3.2"/>
+        <rect x="595" y="60" width="34" height="8" rx="3" fill="#3A3A3A"/>
+        <rect x="628" y="44" width="62" height="18" rx="4" fill="#2A2A2A" stroke="#C8A040" stroke-width="1"/>
+        <rect x="628" y="79" width="62" height="18" rx="4" fill="#2A2A2A" stroke="#C8A040" stroke-width="1"/>
+        <path d="M597,68 L630,68 L635,93 L592,93 Z" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
+        <circle cx="725" cy="104" r="9" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+        <circle cx="749" cy="89" r="9" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+        <circle cx="713" cy="33" r="6" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
+        <g id="numerosNeckNoteNames"></g>
+      </svg>
+    </div>
+    <button id="numerosBtn" style="margin-top:30px; background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:12px 28px; border-radius:22px; font-size:16px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px;">Continuer →</button>
+  </div>
+</div>
 
-  <!-- Coffre style fond marin submergé -->
-  <div id="treasureChest" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:15; width:260px; height:200px;">
-    <svg id="chestSVG" viewBox="0 0 260 200" width="260" height="200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="blur2"><feGaussianBlur stdDeviation="2"/></filter>
-        <linearGradient id="woodGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3D2B1A"/>
-          <stop offset="100%" stop-color="#1E1208"/>
-        </linearGradient>
-        <linearGradient id="lidGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#2E1F10"/>
-          <stop offset="100%" stop-color="#4A3020"/>
-        </linearGradient>
-      </defs>
+<!-- ── Écran "Les numéros, avec + et -" (étape 0b) — même clavier, altérations en + ── -->
+<!-- ── Écran "Les mots" (étape 1) — juste nommer, avant la séquence ── -->
+<div id="motsIntroScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 24px; box-sizing:border-box;">
+  <div onclick="window.skipIntroSequence && window.skipIntroSequence()" style="position:absolute; top:18px; right:22px; z-index:30; cursor:pointer; color:#FFFFFF; font-family:'Inter',Arial,sans-serif; font-size:13px; letter-spacing:0.5px; padding:6px 14px; border:1px solid rgba(110,132,148,0.4); border-radius:20px; transition:opacity 0.3s, color 0.3s; opacity:0.7;" onmouseover="this.style.opacity='1'; this.style.color='#E6D5B0';" onmouseout="this.style.opacity='0.7'; this.style.color='#6E8494';">Passer →</div>
+  <div style="width:100%; max-width:640px; text-align:center;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:700; color:#E6D5B0; letter-spacing:1px; margin-bottom:14px;">Quelques mots, pour commencer</div>
+    <div style="font-size:16px; color:#FFFFFF; font-style:italic; line-height:1.7; margin-bottom:36px;">Comme dans tout domaine de savoir, tout commence par les mots. Voici ceux que vous croiserez bientôt — on ne les explique pas encore, on les nomme.</div>
+    <div id="motsIntroList" style="display:flex; flex-wrap:wrap; justify-content:center; gap:14px 22px; margin-bottom:42px;"></div>
+    <button id="motsIntroBtn" style="background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:12px 28px; border-radius:22px; font-size:16px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px;">Continuer →</button>
+  </div>
+</div>
 
-      <!-- Sable / fond marin -->
-      <ellipse cx="130" cy="185" rx="90" ry="12" fill="#5C4A2A" opacity="0.5"/>
-      <ellipse cx="130" cy="185" rx="70" ry="8"  fill="#7A6040" opacity="0.4"/>
+<!-- ── Écran "Les mots" (étape 2) — retour avec sens, après la séquence ── -->
+<div id="motsRetourScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 24px; box-sizing:border-box;">
+  <div style="width:100%; max-width:640px; text-align:center;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:700; color:#E6D5B0; letter-spacing:1px; margin-bottom:14px;">Ces mots, déjà moins inconnus</div>
+    <div style="font-size:16px; color:#FFFFFF; font-style:italic; line-height:1.7; margin-bottom:30px;">Vous venez de les traverser sans les nommer. Ils ne sont plus tout à fait étrangers.</div>
+    <div id="motsRetourList" style="display:flex; flex-direction:column; gap:16px; text-align:left; margin-bottom:36px;"></div>
+    <button id="motsRetourBtn" style="background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:12px 28px; border-radius:22px; font-size:16px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px;">✓ Entrer dans l'application</button>
+  </div>
+</div>
 
-      <!-- Algues gauche -->
-      <path d="M30,185 Q20,160 35,140 Q25,120 40,100" fill="none" stroke="#2D6A4F" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
-      <path d="M40,185 Q55,165 42,148 Q58,130 45,110" fill="none" stroke="#40916C" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-      <path d="M22,185 Q10,155 25,135" fill="none" stroke="#1B4332" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-      <!-- Algues droite -->
-      <path d="M230,185 Q240,158 225,138 Q238,118 222,100" fill="none" stroke="#2D6A4F" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
-      <path d="M220,185 Q205,162 218,145 Q204,128 216,108" fill="none" stroke="#40916C" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+<!-- ── Écran "Les mots" (cycle 12 notes, étape 1) — dièse, bémol, altération, armure ── -->
+<div id="motsAltIntroScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 24px; box-sizing:border-box;">
+  <div style="width:100%; max-width:640px; text-align:center;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:700; color:#E6D5B0; letter-spacing:1px; margin-bottom:14px;">D'autres mots, pour la suite</div>
+    <div style="font-size:16px; color:#FFFFFF; font-style:italic; line-height:1.7; margin-bottom:36px;">Dans notre premier exemple utilisant la gamme de Do il y avait 7 notes dont aucun dièse, sans altération — mais Do majeur comme La mineur sont des cas particuliers. Pour les autres tonalités, c'est différent, observez sur la page qui suit comment se définissent les autres gammes majeures. Nous verrons plus loin pourquoi.</div>
+    <div id="motsAltIntroList" style="display:flex; flex-wrap:wrap; justify-content:center; gap:14px 22px; margin-bottom:42px;"></div>
+    <button id="motsAltIntroBtn" style="background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:12px 28px; border-radius:22px; font-size:16px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px;">Continuer →</button>
+  </div>
+</div>
 
-      <!-- Barnacles / coquillages -->
-      <circle cx="18"  cy="158" r="5" fill="#4A3728" stroke="#6B5040" stroke-width="1"/>
-      <circle cx="14"  cy="150" r="3" fill="#3D2E22"/>
-      <circle cx="242" cy="162" r="5" fill="#4A3728" stroke="#6B5040" stroke-width="1"/>
-      <circle cx="246" cy="153" r="3" fill="#3D2E22"/>
-      <circle cx="55"  cy="178" r="4" fill="#5A4030" stroke="#7A5840" stroke-width="1"/>
-      <circle cx="200" cy="180" r="4" fill="#5A4030" stroke="#7A5840" stroke-width="1"/>
+<!-- ── Écran "Pourquoi 12 notes ?" (cycle 12 notes, étape 2) — exemple guidé en Sol puis exploration libre ── -->
+<div id="douzeNotesScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:space-evenly; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 0;">
+  <div style="width:100%; max-width:760px; padding:0 24px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:0; height:100%; justify-content:space-evenly;">
 
-      <!-- Corps du coffre — bois sombre et abîmé -->
-      <rect x="20" y="110" width="220" height="80" rx="6" fill="url(#woodGrad)" stroke="#5C3A1E" stroke-width="2.5"/>
-      <!-- Planches horizontales -->
-      <line x1="20" y1="130" x2="240" y2="130" stroke="#1A0E05" stroke-width="1.5" opacity="0.6"/>
-      <line x1="20" y1="150" x2="240" y2="150" stroke="#1A0E05" stroke-width="1.5" opacity="0.6"/>
-      <line x1="20" y1="170" x2="240" y2="170" stroke="#1A0E05" stroke-width="1.5" opacity="0.6"/>
-      <!-- Ferrures rouillées -->
-      <rect x="20"  y="110" width="220" height="7"  fill="#6B3A1A" opacity="0.8"/>
-      <rect x="20"  y="183" width="220" height="7"  fill="#6B3A1A" opacity="0.8"/>
-      <rect x="48"  y="110" width="8"   height="80" fill="#5A3015" opacity="0.7"/>
-      <rect x="204" y="110" width="8"   height="80" fill="#5A3015" opacity="0.7"/>
-      <!-- Rouille sur les ferrures -->
-      <rect x="20"  y="112" width="220" height="3" fill="#8B4513" opacity="0.4"/>
-      <rect x="48"  y="115" width="8"   height="3" fill="#8B4513" opacity="0.4"/>
-      <!-- Serrure rouillée -->
-      <rect x="112" y="125" width="36" height="28" rx="4" fill="#5A3010" stroke="#8B4513" stroke-width="2"/>
-      <ellipse cx="130" cy="136" rx="8" ry="8" fill="#3D1E08" stroke="#7A3A10" stroke-width="1.5"/>
-      <ellipse cx="130" cy="136" rx="4" ry="4" fill="#1A0A00"/>
-      <rect x="127" y="140" width="6" height="9" rx="1" fill="#3D1E08"/>
-      <!-- Clous rouillés -->
-      <circle cx="32"  cy="117" r="3.5" fill="#7A3A10"/>
-      <circle cx="32"  cy="183" r="3.5" fill="#7A3A10"/>
-      <circle cx="228" cy="117" r="3.5" fill="#7A3A10"/>
-      <circle cx="228" cy="183" r="3.5" fill="#7A3A10"/>
-      <!-- Chaîne -->
-      <path d="M60,110 Q65,95 70,110" fill="none" stroke="#5A5A5A" stroke-width="3" stroke-linecap="round"/>
-      <path d="M70,110 Q75,95 80,110" fill="none" stroke="#5A5A5A" stroke-width="3" stroke-linecap="round"/>
-      <path d="M80,110 Q85,95 90,110" fill="none" stroke="#4A4A4A" stroke-width="3" stroke-linecap="round"/>
+    <div style="text-align:center;">
+      <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:30px; font-weight:700; color:#E6D5B0; letter-spacing:2px;">Pourquoi 12 notes, pas seulement 7 ?</div>
+      <div id="douzeNotesSubtitle" style="font-size:16px; color:#FFFFFF; letter-spacing:0.5px; margin-top:8px; font-style:italic; line-height:1.7; min-height:50px;"></div>
+    </div>
 
-      <!-- Clé ancienne -->
-      <g id="chestKey" style="transform-origin: 130px 136px;">
-        <!-- Anneau de la clé -->
-        <circle cx="155" cy="178" r="9"  fill="none" stroke="#8B6914" stroke-width="3.5"/>
-        <circle cx="155" cy="178" r="5"  fill="none" stroke="#8B6914" stroke-width="2"/>
-        <!-- Tige de la clé -->
-        <rect x="130" y="176" width="25" height="4" rx="2" fill="#8B6914"/>
-        <!-- Panneton (dents) -->
-        <rect x="130" y="180" width="5" height="6" rx="1" fill="#8B6914"/>
-        <rect x="138" y="180" width="4" height="8" rx="1" fill="#8B6914"/>
-        <!-- Reflet -->
-        <circle cx="153" cy="176" r="2" fill="#C9A84C" opacity="0.5"/>
-      </g>
+    <!-- Affichage degré/note courant -->
+    <div style="text-align:center; min-height:90px;">
+      <div id="douzeNoteNum" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:48px; font-weight:700; color:#48C9B0; transition:opacity 0.3s;"></div>
+      <div id="douzeNoteLabel" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:30px; color:#F5F0E8; transition:opacity 0.3s; margin-top:2px;"></div>
+      <div id="douzeNotePhrase" style="font-size:15px; color:#FFFFFF; font-style:italic; line-height:1.6; max-width:560px; margin:8px auto 0; transition:opacity 0.3s;"></div>
+    </div>
 
-      <!-- Couvercle (groupe séparé pour animation) -->
-      <g id="chestLid" style="transform-origin: 130px 110px;">
-        <!-- Bois du couvercle -->
-        <rect x="18" y="82" width="224" height="32" rx="5" fill="url(#lidGrad)" stroke="#5C3A1E" stroke-width="2.5"/>
-        <!-- Planches couvercle -->
-        <line x1="18" y1="96" x2="242" y2="96" stroke="#1A0E05" stroke-width="1.5" opacity="0.5"/>
-        <!-- Ferrure couvercle -->
-        <rect x="18" y="82" width="224" height="7" fill="#6B3A1A" opacity="0.8"/>
-        <rect x="18" y="107" width="224" height="7" fill="#6B3A1A" opacity="0.8"/>
-        <rect x="46" y="82"  width="8"   height="32" fill="#5A3015" opacity="0.7"/>
-        <rect x="206" y="82" width="8"   height="32" fill="#5A3015" opacity="0.7"/>
-        <!-- Clous rouillés couvercle -->
-        <circle cx="30"  cy="88" r="3.5" fill="#7A3A10"/>
-        <circle cx="230" cy="88" r="3.5" fill="#7A3A10"/>
-        <!-- Écusson tête de mort -->
-        <ellipse cx="130" cy="95" rx="14" ry="12" fill="#2A1A0A" stroke="#7A3A10" stroke-width="1.5"/>
-        <ellipse cx="130" cy="92" rx="8" ry="7" fill="#C8C8C0" opacity="0.7"/>
-        <circle  cx="127" cy="91" r="2.5" fill="#1A0A00"/>
-        <circle  cx="133" cy="91" r="2.5" fill="#1A0A00"/>
-        <path    d="M126,97 Q130,99 134,97" fill="none" stroke="#1A0A00" stroke-width="1.5"/>
-        <!-- Algue sur le couvercle -->
-        <path d="M160,82 Q168,75 162,68 Q170,62 165,55" fill="none" stroke="#40916C" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-      </g>
+    <!-- Clavier (réutilise la même mécanique 3 octaves que introKeyboard) -->
+    <div style="position:relative; width:100%; margin-top:8px;">
+      <svg id="douzeKeyboard" width="100%" height="100" viewBox="0 -18 700 100">
+        <g id="douzeWhiteKeys"></g>
+        <g id="douzeBlackKeys"></g>
+        <g id="douzeIntervals"></g>
+        <g id="douzeLabels"></g>
+        <g id="douzeDegrees"></g>
+        <rect id="douzeScaleFrame" x="0" y="0" width="0" height="0" fill="none" stroke="#C9A84C" stroke-width="2" rx="5" opacity="0"/>
+        <g id="douzeHighlights"></g>
+      </svg>
+    </div>
 
-      <!-- Lueur dorée intérieure -->
-      <g id="chestLight" style="opacity:0; transform-origin: 130px 110px;">
-        <ellipse cx="130" cy="112" rx="70" ry="18" fill="#F4D03F" opacity="0.5" filter="url(#glow)"/>
-        <ellipse cx="130" cy="112" rx="40" ry="10" fill="#FFD700" opacity="0.4" filter="url(#glow)"/>
-      </g>
+    <!-- Sélecteur de tonalité (exploration libre, les 12 notes) -->
+    <div style="text-align:center;">
+      <div id="douzeTonicLabel" style="font-size:14px; color:#FFFFFF; letter-spacing:0.5px; margin-bottom:10px;">Explorez librement une autre tonalité :</div>
+      <div id="douzeTonicRow" style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
+    </div>
 
-      <!-- Bulles d'eau animées -->
-      <circle cx="80"  cy="75" r="4"   fill="none" stroke="#ADE8F4" stroke-width="1.2" opacity="0.5" style="animation: bubble 3s ease-in infinite; animation-delay:0s;"/>
-      <circle cx="90"  cy="60" r="2.5" fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.4" style="animation: bubble 2.5s ease-in infinite; animation-delay:0.8s;"/>
-      <circle cx="170" cy="70" r="3.5" fill="none" stroke="#ADE8F4" stroke-width="1.2" opacity="0.5" style="animation: bubble 3.5s ease-in infinite; animation-delay:0.4s;"/>
-      <circle cx="185" cy="55" r="2"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.4" style="animation: bubble 2.8s ease-in infinite; animation-delay:1.2s;"/>
-      <circle cx="130" cy="50" r="3"   fill="none" stroke="#ADE8F4" stroke-width="1"   opacity="0.3" style="animation: bubble 4s ease-in infinite; animation-delay:0.2s;"/>
+    <button id="douzeContinueBtn" style="background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:11px 22px; border-radius:20px; font-size:15px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px; opacity:0; transition:opacity 0.5s;">✓ Continuer</button>
+  </div>
+</div>
+
+<!-- ── Écran "Les mots" (cycle 12 notes, étape 3) — retour avec sens ── -->
+<div id="motsAltRetourScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 24px; box-sizing:border-box;">
+  <div style="width:100%; max-width:640px; text-align:center;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:28px; font-weight:700; color:#E6D5B0; letter-spacing:1px; margin-bottom:14px;">Ces mots non plus, déjà moins inconnus</div>
+    <div style="font-size:16px; color:#FFFFFF; font-style:italic; line-height:1.7; margin-bottom:30px;">Vous venez de les voir apparaître sur le clavier. Ils ne sont plus tout à fait étrangers.</div>
+    <div id="motsAltRetourList" style="display:flex; flex-direction:column; gap:16px; text-align:left; margin-bottom:36px;"></div>
+    <button id="motsAltRetourBtn" style="background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:12px 28px; border-radius:22px; font-size:16px; font-family:'Cormorant Garamond',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px;">✓ Entrer dans l'application</button>
+  </div>
+</div>
+
+<div id="introScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9000; display:none; opacity:0; transition:opacity 0.6s; flex-direction:column; align-items:center; justify-content:space-evenly; overflow:hidden; font-family:'Inter',Arial,sans-serif; padding:30px 0;">
+
+  <div style="width:100%; max-width:760px; padding:0 24px; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; gap:0; height:100%; justify-content:space-evenly;">
+
+  <!-- Titre -->
+  <div style="text-align:center;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:30px; font-weight:700; color:#E6D5B0; letter-spacing:2px;">Présentation des notes</div>
+    <div id="introSubtitle" style="font-size:16px; color:#FFFFFF; letter-spacing:0.5px; margin-top:8px; font-style:italic; line-height:1.7;">Quand la gamme part de <strong style="color:#F4D03F;">Do</strong>... Les 7 degrés se déclinent à partir d'elle, jusqu'à la huitième note et au-delà.</div>
+
+    <!-- Sélecteur de tonique : déplacé sur l'écran suivant -->
+    <div id="introTonicRow" style="display:none;">
+    </div>
+  </div>
+
+  <!-- Chaussettes row -->
+  <div id="introSocksRow" style="position:relative; height:110px; width:100%;"></div>
+
+  <!-- Numéro degré — grand, à droite -->
+  <div id="introNoteNum" style="position:absolute; right:60px; top:50%; transform:translateY(-50%); font-family:'Cormorant Garamond',Georgia,serif; font-size:140px; font-weight:900; color:rgba(201,168,76,0.55); line-height:1; transition:opacity 0.4s; letter-spacing:2px; pointer-events:none; user-select:none; text-shadow:0 0 40px rgba(201,168,76,0.4), 0 0 80px rgba(201,168,76,0.2);"></div>
+
+  <!-- Note courante + phrase -->
+  <div style="text-align:center; min-height:100px;">
+    <div id="introNoteLabel" style="font-family:'Cormorant Garamond',Georgia,serif; font-size:44px; font-weight:700; color:#F4D03F; letter-spacing:3px; text-shadow:0 0 24px rgba(244,208,63,0.4); transition:opacity 0.3s;"></div>
+    <div id="introNotePhrase" style="font-size:24px; color:#FFFFFF; font-style:italic; margin-top:10px; transition:opacity 0.3s; font-family:'Cormorant Garamond',Georgia,serif; line-height:1.6; text-shadow:0 0 20px rgba(138,172,191,0.5);"></div>
+  </div>
+
+  <!-- Récap mots-clés (fin de séquence) -->
+  <div id="introMotsCles" style="display:none; text-align:center; padding:20px;">
+  </div>
+
+  <!-- Piano -->
+  <div style="position:relative; width:100%; margin-top:8px;">
+    <svg id="introKeyboard" width="100%" height="82" viewBox="0 0 700 82">
+      <!-- Clavier généré dynamiquement en JS (buildIntroKeyboard) -->
+      <g id="keyboardWhiteKeys"></g>
+      <g id="keyboardBlackKeys"></g>
+      <g id="keyboardLabels"></g>
+      <g id="keyboardDegrees"></g>
+      <rect id="scaleFrame" x="0" y="0" width="0" height="0" fill="none" stroke="#C9A84C" stroke-width="2" rx="5" opacity="0"/>
+      <!-- Surbrillance piano (cercles colorés sur les touches) -->
+      <g id="pianoHighlights"></g>
     </svg>
   </div>
 
-  <div id="introBook" style="opacity:0; position:absolute; top:53%; left:50%; transform:translate(-50%, 20px) scale(0.3);">
-    <svg width="780" height="580" viewBox="0 0 680 420">
-      <defs>
-        <linearGradient id="coverGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%"   stop-color="#5C3A1E"/>
-          <stop offset="50%"  stop-color="#3D2410"/>
-          <stop offset="100%" stop-color="#2A1A0A"/>
-        </linearGradient>
-        <linearGradient id="pageGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#F5ECD7"/>
-          <stop offset="100%" stop-color="#E8D9B8"/>
-        </linearGradient>
-      </defs>
-
-      <ellipse cx="340" cy="405" rx="160" ry="10" fill="#1C1008" opacity="0.3"/>
-
-      <!-- Tranche pages (épaisseur) -->
-      <defs>
-        <linearGradient id="spineGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#2A1A0A"/>
-          <stop offset="40%"  stop-color="#5C3A1E"/>
-          <stop offset="100%" stop-color="#3D2410"/>
-        </linearGradient>
-        <linearGradient id="pageEdgeGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#E8D9B8"/>
-          <stop offset="60%"  stop-color="#F5ECD7"/>
-          <stop offset="100%" stop-color="#C9B89A"/>
-        </linearGradient>
-      </defs>
-      <!-- Épaisseur spine droite -->
-      <rect x="504" y="50" width="28" height="310" rx="2" fill="url(#spineGrad)"/>
-      <line x1="505" y1="50" x2="505" y2="360" stroke="#1A0A00" stroke-width="1" opacity="0.6"/>
-      <line x1="531" y1="50" x2="531" y2="360" stroke="#7A4E28" stroke-width="1" opacity="0.5"/>
-      <!-- Tranche pages visible sur le côté droit -->
-      <rect x="518" y="55" width="14" height="300" rx="1" fill="url(#pageEdgeGrad)"/>
-      <line x1="519" y1="80"  x2="531" y2="80"  stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="110" x2="531" y2="110" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="140" x2="531" y2="140" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="170" x2="531" y2="170" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="200" x2="531" y2="200" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="230" x2="531" y2="230" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="260" x2="531" y2="260" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="290" x2="531" y2="290" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-      <line x1="519" y1="320" x2="531" y2="320" stroke="#C9B89A" stroke-width="0.5" opacity="0.7"/>
-
-      <!-- Couverture avant -->
-      <rect x="304" y="50" width="200" height="310" rx="3" fill="url(#coverGrad)"/>
-      <rect x="304" y="50" width="200" height="310" rx="3" fill="none" stroke="#7A4E28" stroke-width="2.5"/>
-
-      <!-- Coins fer -->
-      <rect x="304" y="50"  width="22" height="22" rx="2" fill="#3A3A3A" opacity="0.9"/>
-      <rect x="482" y="50"  width="22" height="22" rx="2" fill="#3A3A3A" opacity="0.9"/>
-      <rect x="304" y="338" width="22" height="22" rx="2" fill="#3A3A3A" opacity="0.9"/>
-      <rect x="482" y="338" width="22" height="22" rx="2" fill="#3A3A3A" opacity="0.9"/>
-      <circle cx="316" cy="62"  r="3" fill="#8A8A8A"/>
-      <circle cx="500" cy="62"  r="3" fill="#8A8A8A"/>
-      <circle cx="316" cy="356" r="3" fill="#8A8A8A"/>
-      <circle cx="500" cy="356" r="3" fill="#8A8A8A"/>
-
-      <!-- Bandes horizontales fer -->
-      <rect x="304" y="115" width="200" height="8" rx="2" fill="#2A2A2A" opacity="0.8"/>
-      <rect x="304" y="287" width="200" height="8" rx="2" fill="#2A2A2A" opacity="0.8"/>
-      <circle cx="320" cy="119" r="4" fill="#4A4A4A"/>
-      <circle cx="490" cy="119" r="4" fill="#4A4A4A"/>
-      <circle cx="404" cy="119" r="4" fill="#4A4A4A"/>
-      <circle cx="320" cy="291" r="4" fill="#4A4A4A"/>
-      <circle cx="490" cy="291" r="4" fill="#4A4A4A"/>
-      <circle cx="404" cy="291" r="4" fill="#4A4A4A"/>
-
-      <!-- Armature verticale -->
-      <rect x="398" y="50" width="8" height="310" rx="1" fill="#2A2A2A" opacity="0.6"/>
-
-      <!-- Cadre doré -->
-      <rect x="322" y="130" width="160" height="150" rx="2" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.7"/>
-      <rect x="326" y="134" width="152" height="142" rx="1" fill="none" stroke="#C9A84C" stroke-width="0.6" opacity="0.4"/>
-
-      <!-- Clé de sol -->
-      <text x="404" y="168" text-anchor="middle" font-size="28" font-family="serif" fill="#C9A84C" opacity="0.5">𝄞</text>
-
-      <!-- Titre -->
-      <text x="404" y="195" text-anchor="middle" font-size="17" font-weight="bold" font-family="Georgia,serif" fill="#F0DFA8">De l'harmonie</text>
-      <text x="404" y="217" text-anchor="middle" font-size="17" font-weight="bold" font-family="Georgia,serif" fill="#F0DFA8">musicale aux</text>
-      <text x="404" y="239" text-anchor="middle" font-size="17" font-weight="bold" font-family="Georgia,serif" fill="#C9A84C">mathématiques</text>
-      <line x1="338" y1="244" x2="470" y2="244" stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
-      <line x1="338" y1="248" x2="470" y2="248" stroke="#C9A84C" stroke-width="0.8" opacity="0.6"/>
-      <text x="404" y="265" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="#D4B896">Richard Menesclou · 2026</text>
-
-      <!-- Fermoir -->
-      <rect x="295" y="192" width="18" height="26" rx="3" fill="#2A2A2A"/>
-      <rect x="297" y="194" width="14" height="22" rx="2" fill="#3A3A3A"/>
-      <circle cx="304" cy="205" r="4" fill="#1A1A1A"/>
-      <circle cx="304" cy="205" r="2" fill="#5A5A5A"/>
-    </svg>
-  </div>
-
-  <div id="introTitle" style="text-align:center; opacity:1; transition:opacity 0.6s; margin-bottom:10px; position:relative; z-index:10;">
-    <!-- SVG titre avec lettres qui s'illuminent -->
-    <svg id="titleSVG" viewBox="0 0 620 80" width="620" height="80" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
-      <defs>
-        <filter id="titleGlow">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="titleGlowStrong">
-          <feGaussianBlur stdDeviation="8" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <!-- Halo de fond qui pulse -->
-      <ellipse id="titleHalo" cx="310" cy="42" rx="280" ry="30" fill="#E8A835" opacity="0" style="filter:url(#titleGlowStrong);"/>
-      <!-- Texte principal — les lettres seront animées lettre par lettre en JS -->
-      <text id="titleText" x="310" y="58"
-        text-anchor="middle"
-        font-size="52"
-        font-weight="600"
-        font-family="'Cormorant Garamond', Georgia, serif"
-        letter-spacing="5"
-        fill="#E8A835"
-        opacity="0.7"
-        style="filter:url(#titleGlow);">Harmonie musicale</text>
-
-    </svg>
-    <!-- Clé de sol décorative qui tourne en apparaissant -->
-    <div id="titleClef" style="position:absolute; top:-18px; left:50%; transform:translateX(-50%) scale(0) rotate(-180deg); font-size:36px; color:#C9A84C; opacity:0; transition:all 1s cubic-bezier(.34,1.56,.64,1); filter:drop-shadow(0 0 8px rgba(201,168,76,0.7)); z-index:11;">𝄞</div>
-  </div>
-
-  <!-- Zone chaussettes au-dessus du clavier -->
-  <div style="position:relative; width:490px; margin-top:0px;">
-    <div id="introSocksRow" style="position:relative; height:140px; width:660px; opacity:0;"></div>
-    <!-- Mini clavier -->
-    <svg id="introKeyboard" width="660" height="80" viewBox="0 0 660 80" style="opacity:0;">
-      <!-- Octave 1 — 7 touches blanches (50px chacune) -->
-      <rect x="1"   y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="51"  y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="101" y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="151" y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="201" y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="251" y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <rect x="301" y="0" width="48" height="76" rx="3" fill="#F5F0E8" stroke="#9A8F88" stroke-width="1"/>
-      <!-- Touches noires octave 1 -->
-      <rect x="35"  y="0" width="30" height="44" rx="2" fill="#2A2520"/>
-      <rect x="85"  y="0" width="30" height="44" rx="2" fill="#2A2520"/>
-      <rect x="185" y="0" width="30" height="44" rx="2" fill="#2A2520"/>
-      <rect x="235" y="0" width="30" height="44" rx="2" fill="#2A2520"/>
-      <rect x="285" y="0" width="30" height="44" rx="2" fill="#2A2520"/>
-      <!-- Noms octave 1 -->
-      <text x="25"  y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Do</text>
-      <text x="75"  y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Ré</text>
-      <text x="125" y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Mi</text>
-      <text x="175" y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Fa</text>
-      <text x="225" y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Sol</text>
-      <text x="275" y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">La</text>
-      <text x="325" y="57" text-anchor="middle" fill="#6A5A50" font-size="10" font-family="Arial" font-weight="bold">Si</text>
-      <!-- Chiffres 1-7 -->
-      <text x="25"  y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">1</text>
-      <text x="75"  y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">2</text>
-      <text x="125" y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">3</text>
-      <text x="175" y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">4</text>
-      <text x="225" y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">5</text>
-      <text x="275" y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">6</text>
-      <text x="325" y="69" text-anchor="middle" fill="#D4A843" font-size="10" font-family="Arial" font-weight="bold">7</text>
-      <!-- Séparateur -->
-      <line x1="354" y1="8" x2="354" y2="72" stroke="#9A8F88" stroke-width="1" opacity="0.4" stroke-dasharray="3,3"/>
-      <!-- Octave 2 — 6 touches (Do=8 à La=13) -->
-      <rect x="358" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <rect x="408" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <rect x="458" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <rect x="508" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <rect x="558" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <rect x="608" y="0" width="48" height="76" rx="3" fill="#F0EAE0" stroke="#9A8F88" stroke-width="1" opacity="0.85"/>
-      <!-- Touches noires octave 2 -->
-      <rect x="392" y="0" width="30" height="44" rx="2" fill="#2A2520" opacity="0.75"/>
-      <rect x="442" y="0" width="30" height="44" rx="2" fill="#2A2520" opacity="0.75"/>
-      <rect x="542" y="0" width="30" height="44" rx="2" fill="#2A2520" opacity="0.75"/>
-      <rect x="592" y="0" width="30" height="44" rx="2" fill="#2A2520" opacity="0.75"/>
-      <!-- Noms octave 2 -->
-      <text x="382" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">Do</text>
-      <text x="432" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">Ré</text>
-      <text x="482" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">Mi</text>
-      <text x="532" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">Fa</text>
-      <text x="582" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">Sol</text>
-      <text x="632" y="57" text-anchor="middle" fill="#8A7A70" font-size="10" font-family="Arial" font-weight="bold">La</text>
-      <!-- Chiffres 8-13 -->
-      <text x="382" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">8</text>
-      <text x="432" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">9</text>
-      <text x="482" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">10</text>
-      <text x="532" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">11</text>
-      <text x="582" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">12</text>
-      <text x="632" y="69" text-anchor="middle" fill="#C49030" font-size="10" font-family="Arial" font-weight="bold">13</text>
-    </svg>
-  </div>
-
-  <!-- Manche de guitare sous le piano -->
-  <div id="introNeck" style="opacity:0; transition:opacity 1s; margin-top:4px; width:100%; max-width:860px;">
-
-    <!-- SVG guitare complète en un seul bloc -->
-    <svg id="introGuitarSVG" width="100%" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg" style="height:160px;">
-
-      <!-- Tête de manche -->
+  <!-- Manche guitare -->
+  <div id="introNeck" style="width:100%; margin-top:20px;">
+    <svg id="introGuitarSVG" width="100%" height="100" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
+      <!-- Tête -->
       <rect x="2" y="15" width="52" height="70" rx="7" fill="#6B3A1A" stroke="#4A2010" stroke-width="1.5"/>
-      <!-- Mécaniques haut (3) -->
       <circle cx="16" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
       <circle cx="29" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
       <circle cx="42" cy="18" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
-      <!-- Mécaniques bas (3) -->
       <circle cx="16" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
       <circle cx="29" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
       <circle cx="42" cy="82" r="5" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
-      <!-- Logo Gibson -->
       <text x="29" y="53" text-anchor="middle" font-size="10" fill="#C8A040" font-family="Georgia,serif" font-style="italic" font-weight="bold" transform="rotate(-90, 29, 53)">Gibson</text>
-      <!-- Sillet -->
       <rect x="52" y="20" width="5" height="60" rx="1" fill="#D4B483"/>
-
-      <!-- Manche palissandre -->
+      <!-- Manche -->
       <rect x="57" y="22" width="390" height="56" fill="#3A1E08" stroke="#6B4020" stroke-width="1"/>
-
-      <!-- Frettes (0 à 12) -->
+      <!-- Frettes -->
       <line x1="57"  y1="22" x2="57"  y2="78" stroke="#D4B483" stroke-width="3"/>
       <line x1="87"  y1="22" x2="87"  y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="116" y1="22" x2="116" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
-      <line x1="143" y1="22" x2="143" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
-      <line x1="169" y1="22" x2="169" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="144" y1="22" x2="144" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
+      <line x1="170" y1="22" x2="170" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="194" y1="22" x2="194" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="218" y1="22" x2="218" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="241" y1="22" x2="241" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
@@ -1145,112 +993,75 @@
       <line x1="374" y1="22" x2="374" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="388" y1="22" x2="388" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
       <line x1="447" y1="22" x2="447" y2="78" stroke="rgba(220,200,160,0.6)" stroke-width="1.5"/>
-
-      <!-- Inlays frettes 3,5,7,9,12 -->
-      <circle cx="156" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="206" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="252" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="294" cy="50" r="4" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="331" cy="40" r="3" fill="rgba(255,255,255,0.2)"/>
-      <circle cx="331" cy="60" r="3" fill="rgba(255,255,255,0.2)"/>
-
-      <!-- Cordes (6) -->
+      <!-- Inlays -->
+      <circle cx="156" cy="50" r="4" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="206" cy="50" r="4" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="252" cy="50" r="4" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="294" cy="50" r="4" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="331" cy="40" r="3" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="331" cy="60" r="3" fill="rgba(255,255,255,0.15)"/>
+      <!-- Cordes -->
       <line x1="57" y1="30" x2="447" y2="30" stroke="#D8D8D8" stroke-width="1"/>
       <line x1="57" y1="38" x2="447" y2="38" stroke="#D0D0D0" stroke-width="1"/>
       <line x1="57" y1="46" x2="447" y2="46" stroke="#C0C0C0" stroke-width="1.5"/>
       <line x1="57" y1="54" x2="447" y2="54" stroke="#B8B8B8" stroke-width="1.5"/>
       <line x1="57" y1="62" x2="447" y2="62" stroke="#A8A8A8" stroke-width="2"/>
       <line x1="57" y1="70" x2="447" y2="70" stroke="#989898" stroke-width="2"/>
-
       <!-- Corps Gibson 175 -->
       <path d="M447,5 C435,5 424,10 420,20 C416,30 422,36 422,46 C422,56 414,60 412,70 C410,82 418,94 432,100 C446,106 465,108 490,108 C530,108 568,98 590,82 C606,70 612,54 608,40 C604,26 590,14 570,8 C552,3 522,0 490,2 Z" fill="#8B2020" stroke="#5C1010" stroke-width="1.5"/>
-      <!-- Brillance -->
-      <path d="M450,8 C438,10 428,18 426,26 C424,34 428,40 428,46" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3"/>
-      <!-- Ouïe f haut -->
+      <path d="M450,8 C438,10 428,18 426,26 C424,34 428,40 428,46" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
       <path d="M468,32 C465,28 463,24 463,20 C463,16 465,14 467,12" fill="none" stroke="#5C0808" stroke-width="2.5"/>
-      <!-- Ouïe f bas -->
       <path d="M468,72 C465,76 463,80 463,84 C463,88 465,90 467,92" fill="none" stroke="#5C0808" stroke-width="2.5"/>
-      <!-- Chevalet -->
       <rect x="453" y="47" width="26" height="6" rx="2" fill="#3A3A3A"/>
-      <!-- Micro manche -->
       <rect x="478" y="35" width="48" height="14" rx="3" fill="#2A2A2A" stroke="#C8A040" stroke-width="0.8"/>
-      <!-- Micro chevalet -->
       <rect x="478" y="62" width="48" height="14" rx="3" fill="#2A2A2A" stroke="#C8A040" stroke-width="0.8"/>
-      <!-- Cordier trapèze -->
       <path d="M454,53 L480,53 L484,72 L450,72 Z" fill="#C8A040" stroke="#8B7020" stroke-width="1"/>
-      <!-- Boutons volume -->
       <circle cx="555" cy="82" r="7" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
       <circle cx="573" cy="70" r="7" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
-      <!-- Sélecteur -->
       <circle cx="545" cy="25" r="5" fill="#1A1A1A" stroke="#555" stroke-width="1"/>
-
-      <!-- Numéros de frettes en bas -->
-      <text x="72"  y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">0</text>
-      <text x="102" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">1</text>
-      <text x="130" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">2</text>
-      <text x="156" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">3</text>
-      <text x="182" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">4</text>
-      <text x="206" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">5</text>
-      <text x="230" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">6</text>
-      <text x="252" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">7</text>
-      <text x="274" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">8</text>
-      <text x="294" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">9</text>
-      <text x="314" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">10</text>
-      <text x="332" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">11</text>
-      <text x="350" y="96" text-anchor="middle" font-size="9" fill="#5A7A8A" font-family="Inter,sans-serif">12</text>
-
-      <!-- Notes Sock Notes — générées dynamiquement par JS -->
+      <!-- Numéros frettes -->
+      <text x="72"  y="96" text-anchor="middle" font-size="8" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif" font-style="italic">à vide</text>
+      <text x="102" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">1</text>
+      <text x="130" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">2</text>
+      <text x="156" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">3</text>
+      <text x="182" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">4</text>
+      <text x="206" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">5</text>
+      <text x="230" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">6</text>
+      <text x="252" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">7</text>
+      <text x="274" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">8</text>
+      <text x="294" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">9</text>
+      <text x="314" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">10</text>
+      <text x="332" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">11</text>
+      <text x="350" y="96" text-anchor="middle" font-size="9" fill="#FFFFFF" opacity="0.7" font-family="Inter,sans-serif">12</text>
+      <!-- Points notes guitare dynamiques -->
       <g id="introNeckDots"></g>
-
     </svg>
   </div>
 
-  <div id="introSubtitle" style="font-size:20px; color:#C9A84C; opacity:1; transition:opacity 1s; font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; letter-spacing:1.5px; text-align:center;">
-    La musique par les chiffres
-  </div>
-
-  <div style="position:absolute; bottom:130px; right:60px; z-index:20; text-align:right; pointer-events:none;">
-    <div style="color:#D6EAF8; font-size:16px; font-family:Georgia,serif; font-style:italic; opacity:0.80; white-space:nowrap; text-shadow:0 1px 4px rgba(0,0,0,0.4);">
-      "Cherchez, vous trouverez." &mdash; J.S. Bach
+  <!-- Message final -->
+  <div id="introClosing" style="opacity:0; transition:opacity 1s; text-align:center; padding:0 20px; margin-top:6px;">
+    <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:17px; color:#C9A84C; font-style:italic; letter-spacing:0.5px;">
+      C'est sur ce type d'architecture que repose la musique tonale.
     </div>
   </div>
-  <div id="introStartBtn" style="position:absolute; bottom:70px; left:50%; transform:translateX(-50%); z-index:20; text-align:center; cursor:pointer; width:90%;" onclick="startIntroWithAudio()">
-    <div style="color:#D4B896; font-size:20px; font-family:Georgia,serif; font-style:italic; opacity:0.95;">
+
+  </div><!-- fin wrapper centré -->
+
+  <div id="introStartBtn" style="position:absolute; bottom:28px; left:50%; transform:translateX(-50%); z-index:20; text-align:center; cursor:pointer; width:90%; opacity:0;" onclick="startIntroWithAudio()">
+    <div style="color:#D4B896; font-size:18px; font-family:'Cormorant Garamond',Georgia,serif; font-style:italic;">
       Appuyez sur <strong style="color:#F4D03F;">Entrée</strong> ou cliquez ici pour commencer
     </div>
   </div>
-  <div id="introClosing" style="opacity:0; transition:opacity 1.2s; text-align:center; font-family:Arial,sans-serif; padding:0 20px; margin-top:30px;">
-    <div style="font-size:19px; color:#F5F0E8; line-height:1.9; font-style:italic;">
-      Nous sommes les <strong style="color:#D4A843;">notes-chaussettes</strong> — les <strong style="color:#F4D03F;">Sock Notes</strong> !<br>
-      nous allons vous aider à entrer dans le monde de <strong style="color:#D4A843;">l'harmonie musicale</strong>.
-    </div>
-    <div style="font-size:19px; color:#A8C4D8; line-height:1.9; font-style:italic; margin-top:14px; font-family:Arial,sans-serif; letter-spacing:0.5px;">
-      La musique cache un ordre — derrière les sons, les accords et les tonalités se révèle une logique.
-    </div>
-  </div>
 
-  <button id="skipIntroBtn" style="position:absolute; bottom:20px; right:16px; background:transparent; border:1px solid rgba(255,255,255,0.35); color:#F5F0E8; font-size:16px; padding:8px 18px; border-radius:20px; cursor:pointer; font-family:Arial,sans-serif; opacity:0.75;">Passer l'introduction →</button>
+  <button id="skipIntroBtn" style="position:absolute; bottom:8px; right:16px; background:#0d1b2a; border:1px solid rgba(255,255,255,0.25); color:#F5F0E8; font-size:13px; padding:6px 14px; border-radius:16px; cursor:pointer; font-family:'Inter',sans-serif; opacity:0.6;">Passer →</button>
 
-</div>
+</div><!-- fin introScreen -->
 
 <style>
-@keyframes bookJourney {
-  0%   { opacity:0; transform:translate(calc(-50% - 500px), calc(-50% + 250px)) rotate(-15deg) scale(0.08); }
-  15%  { opacity:1; transform:translate(calc(-50% - 350px), calc(-50% + 180px)) rotate(-10deg) scale(0.12); }
-  30%  { opacity:1; transform:translate(calc(-50% - 200px), calc(-50% + 100px)) rotate(-5deg) scale(0.18); }
-  45%  { opacity:1; transform:translate(calc(-50% - 80px), calc(-50% + 40px)) rotate(3deg) scale(0.3); }
-  60%  { opacity:1; transform:translate(calc(-50% + 40px), calc(-50% - 20px)) rotate(-2deg) scale(0.55); }
-  75%  { opacity:1; transform:translate(calc(-50% + 10px), calc(-50% - 10px)) rotate(4deg) scale(0.85); }
-  88%  { opacity:1; transform:translate(-50%, calc(-50% + 8px)) rotate(-2deg) scale(1.05); }
-  100% { opacity:1; transform:translate(-50%, -50%) rotate(0deg) scale(1); }
-}
-@keyframes bookEntrance {
-  0%   { opacity:0; transform:translate(-50%,-50%) rotate(-20deg) translateY(350px) scale(0.5); }
-  40%  { opacity:1; transform:translate(-50%,-50%) rotate(6deg) translateY(-30px) scale(1.08); }
-  60%  { transform:translate(-50%,-50%) rotate(-4deg) translateY(15px) scale(1); }
-  75%  { transform:translate(-50%,-50%) rotate(3deg) translateY(-10px) scale(1.02); }
-  90%  { transform:translate(-50%,-50%) rotate(-2deg) translateY(5px) scale(1); }
-  100% { opacity:1; transform:translate(-50%,-50%) rotate(0deg) translateY(0px) scale(1); }
+@keyframes pulseCTA {
+  0%   { transform: translateX(-50%) scale(1);    opacity: 0.85; }
+  50%  { transform: translateX(-50%) scale(1.04); opacity: 1;    }
+  100% { transform: translateX(-50%) scale(1);    opacity: 0.85; }
 }
 @keyframes titleHaloPulse {
   0%,100% { opacity: 0.05; rx: 280; }
@@ -1259,18 +1070,6 @@
 @keyframes clefPulse {
   0%,100% { transform: translateX(-50%) scale(1) rotate(0deg);   opacity: 0.85; }
   50%     { transform: translateX(-50%) scale(1.12) rotate(5deg); opacity: 1; }
-}
-@keyframes bookFloat {
-  0%   { transform:translate(-50%,-50%) rotate(0deg) translateY(0px); }
-  20%  { transform:translate(-50%,-50%) rotate(-3deg) translateY(-15px); }
-  40%  { transform:translate(-50%,-50%) rotate(2deg) translateY(-5px); }
-  60%  { transform:translate(-50%,-50%) rotate(-2deg) translateY(-18px); }
-  80%  { transform:translate(-50%,-50%) rotate(3deg) translateY(-8px); }
-  100% { transform:translate(-50%,-50%) rotate(0deg) translateY(0px); }
-}
-@keyframes bookExit {
-  0%   { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
-  100% { opacity:0; transform:translate(-50%,-50%) scale(0.15) translateY(-400px) rotate(20deg); }
 }
 @keyframes sockDropOnKey {
   0%   { transform: translateY(-60px) rotate(-15deg); opacity:0; }
@@ -1294,12 +1093,11 @@
 
 <!-- Chaussettes fixes en haut -->
 <div id="socksRow" style="position:fixed; top:8px; left:120px; z-index:60; display:flex; gap:4px; align-items:flex-end;"></div>
-<div class="top-name" style="position:fixed; bottom:10px; right:14px; top:auto; left:auto; font-size:13px; color:#8B949E; z-index:60; font-style:italic; opacity:0.6; font-family:'Inter',sans-serif;">Richard Menesclou · 2026</div>
-<div id="authorCredit" style="position:fixed; bottom:10px; left:14px; z-index:1050; font-size:15px; color:#C9A84C; font-family:'Cormorant Garamond', Georgia, serif; font-style:italic; opacity:0.75; letter-spacing:0.5px; pointer-events:none; text-shadow:0 1px 4px rgba(0,0,0,0.5);">Richard Menesclou · Harmonie musicale · 2026</div>
-<div id="sessionTimer" style="position:fixed; bottom:10px; left:14px; z-index:60; font-size:13px; color:#8B949E; font-family:'Inter',sans-serif; opacity:0; transition:opacity 1.5s ease; display:flex; flex-direction:column; align-items:flex-start; gap:1px;">
-  <span id="timerSession" style="font-style:italic;">⏱ 00:00</span>
-  <span id="timerTotal"   style="font-style:italic; font-size:13px;"></span>
+<div class="top-name" style="position:fixed; bottom:10px; right:14px; top:auto; left:auto; font-size:13px; color:#FFFFFF; z-index:60; font-style:italic; opacity:0.6; font-family:'Inter',sans-serif;">Richard Menesclou · 2026
+  <span onclick="resetProfil()" title="Réinitialiser le profil" style="margin-left:10px; cursor:pointer; font-style:normal; font-size:13px; color:#C9A84C; opacity:0.8; transition:opacity 0.2s; border:1px solid rgba(201,168,76,0.4); padding:2px 7px; border-radius:10px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">⟳ profil</span>
 </div>
+<div id="authorCredit" style="position:fixed; bottom:10px; left:14px; z-index:1050; font-size:15px; color:#C9A84C; font-family:'Cormorant Garamond', Georgia, serif; font-style:italic; opacity:0.75; letter-spacing:0.5px; pointer-events:none; text-shadow:0 1px 4px rgba(0,0,0,0.5);">Richard Menesclou · Harmonie musicale · 2026</div>
+
 
 <style>
 @keyframes handBlink {
@@ -1371,8 +1169,8 @@
 }
 </style>
 
-<div id="levelTabs" style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; padding:4px 0;">
-  <button id="voiceBtn" onclick="VOICE.toggle()" style="background:rgba(255,255,255,0.05); color:#8B949E; border:1px solid rgba(255,255,255,0.1); padding:5px 10px; border-radius:20px; font-size:16px; cursor:pointer;" title="Activer/désactiver la narration">🔇</button>
+<div id="levelTabs" style="display:none; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap; padding:4px 0;">
+  <button id="voiceBtn" onclick="VOICE.toggle()" style="background:rgba(255,255,255,0.05); color:#FFFFFF; border:1px solid rgba(255,255,255,0.1); padding:5px 10px; border-radius:20px; font-size:16px; cursor:pointer;" title="Activer/désactiver la narration">🔇</button>
   <button class="lvl-tab" onclick="switchLevel(0)" data-level="0">0 · Intervalles</button>
   <button class="lvl-tab" onclick="switchLevel(8)" data-level="8">8 · Degrés</button>
   <button class="lvl-tab" onclick="switchLevel(1)" data-level="1">1 · Gamme majeure</button>
@@ -1384,7 +1182,7 @@
   <button class="lvl-tab" onclick="switchLevel(7)" data-level="7">7 · Lire la musique</button>
 </div>
 <!-- Garder le select caché pour la compatibilité JS -->
-<select id="levelSelect" style="display:none;" onchange="switchLevel(this.value)">
+<select id="levelSelect" style="display:none; visibility:hidden; position:absolute; width:0; height:0; overflow:hidden;" onchange="switchLevel(this.value)">
   <option value="0" selected>Intervalles</option>
   <option value="1">Niveau 1</option>
   <option value="2">Niveau 2</option>
@@ -1394,13 +1192,13 @@
   <option value="6">Niveau 6</option>
 </select>
 
-<h1 class="page-title" id="pageTitle">Harmonie musicale</h1>
+<h1 class="page-title" id="pageTitle" style="display:none;">Harmonie musicale</h1>
 <div id="musicNumbers" style="display:none; position:fixed !important; top:34px; right:16px; text-align:right; z-index:54; font-family:'Cormorant Garamond',Georgia,serif; font-size:13px; font-weight:600; color:#C9A84C; letter-spacing:0.5px; opacity:0.85;">La musique par les chiffres</div>
-<div id="pageSubtitle" style="text-align:center; font-size:14px; color:#85929E; margin-bottom:2px;"></div>
+<div id="pageSubtitle" style="display:none; text-align:center; font-size:14px; color:#85929E; margin-bottom:2px;"></div>
 
-<div id="levelMsg" style="text-align:center; font-size:18px; font-weight:bold; color:#F39C12; min-height:22px; margin-bottom:6px;"></div>
+<div id="levelMsg" style="display:none; text-align:center; font-size:18px; font-weight:bold; color:#F39C12; min-height:22px; margin-bottom:6px;"></div>
 
-<div id="controls" style="width:100%; max-width:900px; margin:0 auto;"></div>
+<div id="controls" style="display:none; width:100%; max-width:900px; margin:0 auto;"></div>
 
 <!-- Pages sous-sections niveau 0 -->
 <div id="subPageCalc" style="width:100%; max-width:600px; margin:60px auto 0; padding:16px; box-sizing:border-box; position:relative; z-index:10; flex-direction:column; justify-content:center; display:none;">
@@ -1446,7 +1244,7 @@
 
 <div id="formulaTop" style="display:none; max-width:900px; margin:8px auto 0;"></div>
 
-<div class="stage-wrap">
+<div class="stage-wrap" style="display:none;">
   <div class="stage" id="stageMain">
     <div id="stageInner" class="stage-left">
       <div class="grid">
@@ -1663,7 +1461,14 @@ const SOCK_NOTES = [
   { note:'Fa',  color:'#90D4A0', dark:'#187010', light:'#68C860', textCol:'#fff', speech:'Je suis le Fa — aérienne et lumineuse, le mode Lydien.' },
   { note:'Sol', color:'#90B8F0', dark:'#0860B8', light:'#60B0F8', textCol:'#fff', speech:'Je suis le Sol — la Dominante, la force qui appelle le retour.' },
   { note:'La',  color:'#A8A0E0', dark:'#282898', light:'#7878D8', textCol:'#fff', speech:'Salut, je suis le La — la douceur, la relative mineure.' },
-  { note:'Si',  color:'#C8A0D8', dark:'#680898', light:'#C060D8', textCol:'#fff', speech:'Je suis le Si — la sensible, attirée vers le Do comme un aimant !' }
+  { note:'Si',  color:'#C8A0D8', dark:'#680898', light:'#C060D8', textCol:'#fff', speech:'Je suis le Si — la sensible, attirée vers le Do comme un aimant !' },
+  // Degrés 8 à 13 — octave supérieure : mêmes teintes que 1 à 6, assombries (comme les touches noires)
+  { note:'Do',  color:'#8A2A24', dark:'#5C1414', light:'#A03838', textCol:'#fff', speech:"Je suis le Do de l'octave — le même, mais plus haut." },
+  { note:'Ré',  color:'#8A6850', dark:'#5C2C08', light:'#A05028', textCol:'#fff', speech:"Je suis le Ré de l'octave — la neuvième, qui colore l'accord." },
+  { note:'Mi',  color:'#8A7E4C', dark:'#584400', light:'#A89020', textCol:'#fff', speech:"Je suis le Mi de l'octave — la dixième, douce extension." },
+  { note:'Fa',  color:'#4C7458', dark:'#0C3A08', light:'#386C38', textCol:'#fff', speech:"Je suis le Fa de l'octave — la onzième." },
+  { note:'Sol', color:'#4C6480', dark:'#043060', light:'#305C80', textCol:'#fff', speech:"Je suis le Sol de l'octave." },
+  { note:'La',  color:'#585078', dark:'#101450', light:'#404078', textCol:'#fff', speech:"Je suis le La de l'octave — la treizième, qui couronne les grands accords de jazz." }
 ];
 
 let _introStarted = false;
@@ -1680,108 +1485,8 @@ function startIntroWithAudio() {
 
   const is = document.getElementById('introScreen');
 
-  // ── PHASE 1 : Coffre (clé + ouverture) ── 0s → 5s
-  animateTreasureChest();
-
-  // ── PHASE 2 : Chaussettes s'envolent du coffre ── 4.2s → 7.5s
-  // Le couvercle s'ouvre à 3.8s → les chaussettes émergent ensuite
-  setTimeout(() => {
-    launchSocksFromChest(is);
-  }, 4200);
-
-  // ── PHASE 3 : Livre émerge du coffre ── 5.8s → 9s
-  const book = document.getElementById('introBook');
-  if (book) {
-    setTimeout(() => {
-      book.style.opacity = '1';
-      book.style.animation = 'bookRise 3.2s ease-out forwards';
-    }, 5800);
-
-    // Livre flotte après son arrivée — on lui laisse 6s bien visibles
-    setTimeout(() => {
-      book.style.animation = 'bookFloat 6s ease-in-out infinite';
-    }, 9200);
-
-    // Livre repart seulement à 15.5s
-    setTimeout(() => {
-      book.style.animation = 'bookExit 1s ease-in forwards';
-    }, 15500);
-  }
-
-  // ── PHASE 4 : Titre animé option C ── 7s (pendant que le livre flotte)
-  setTimeout(() => {
-    if (window._introTitleAnim !== false) {
-      animateTitleC();
-    } else {
-      // Titre simple sans animation C
-      const titl = document.getElementById('introTitle');
-      if (titl) { titl.style.transition='opacity 0.8s'; titl.style.opacity='1'; }
-    }
-    launchGoldParticles(is);
-  }, 7000);
-
-  // ── PHASE 4b : Subtitle "La musique par les chiffres" — après que le livre soit bien installé
-  setTimeout(() => {
-    const sub = document.getElementById('introSubtitle');
-    if (sub) { sub.style.transition = 'opacity 1.2s'; sub.style.opacity = '1'; }
-  }, 10800);
-
-  // ── PHASE 5 : Suite de la séquence (chaussettes sur clavier) ── après départ du livre
-  setTimeout(() => runIntroSequence(), 16800);
-}
-
-// Lance les 7 chaussettes depuis le centre (coffre) vers leurs positions
-function launchSocksFromChest(container) {
-  // Position approximative du coffre : centre, 52% de la hauteur
-  const chestX = window.innerWidth / 2;
-  const chestY = window.innerHeight * 0.50;
-
-  SOCK_NOTES.forEach((n, i) => {
-    const sockW = 32;
-    const div = document.createElement('div');
-    div.style.cssText = `
-      position:fixed;
-      left:${chestX}px;
-      top:${chestY}px;
-      width:${sockW * 0.41}px;
-      height:${sockW}px;
-      opacity:0;
-      transform:translate(-50%,-50%) scale(0.3);
-      z-index:1010;
-      pointer-events:none;
-    `;
-    div.innerHTML = makeSockSVG(n, sockW);
-    container.appendChild(div);
-
-    // Décalage de départ pour chaque note
-    const delay = i * 180;
-
-    setTimeout(() => {
-      // Apparition depuis le coffre
-      div.style.transition = 'opacity 0.3s, transform 0.5s cubic-bezier(.34,1.56,.64,1)';
-      div.style.opacity = '1';
-      div.style.transform = 'translate(-50%,-50%) scale(1.2)';
-
-      // Vol parabolique vers le haut
-      setTimeout(() => {
-        // Trajectoire : arc vers le haut puis vers les côtés
-        const spread = (i - 3) * 90; // répartition horizontale
-        const height = -200 - Math.random() * 120;
-        const rot    = (Math.random() - 0.5) * 60;
-        div.style.transition = `all 1.1s cubic-bezier(.25,.46,.45,.94)`;
-        div.style.transform  = `translate(calc(-50% + ${spread}px), calc(-50% + ${height}px)) rotate(${rot}deg) scale(0.7)`;
-        div.style.opacity    = '0.9';
-      }, 300);
-
-      // Disparition progressive
-      setTimeout(() => {
-        div.style.transition = 'opacity 0.8s';
-        div.style.opacity    = '0';
-        setTimeout(() => div.remove(), 800);
-      }, 1600);
-
-    }, delay);
-  });
+  // ── PHASE 1 : Lancer directement la présentation des notes ──
+  setTimeout(() => runIntroSequence(), 800);
 }
 
 // ── Option C : animation du titre ──
@@ -1890,6 +1595,11 @@ function launchGoldParticles(container) {
 
 // Écouter la touche Entrée
 document.addEventListener('keydown', (e) => {
+  // Ne rien faire si l'écran de couverture ou de profil est encore actif (saisie en cours)
+  const cover = document.getElementById('coverScreen');
+  const profil = document.getElementById('profilScreen');
+  if (cover) return;
+  if (profil && profil.style.display !== 'none') return;
   const is = document.getElementById('introScreen');
   if (!is || is.style.display === 'none' || is.style.opacity === '0') return;
   if (e.key === 'Enter') startIntroWithAudio();
@@ -1922,9 +1632,6 @@ function skipIntro() {
     const sw = document.querySelector('.stage-wrap');
     if (sw) sw.style.display = '';
     showPageAfterIntro();
-    buildControls();
-    render();
-    buildSocksRow();
     const pt = document.getElementById("pageTitle");
     if (pt) pt.classList.add("level-side");
     console.log('skipIntro done');
@@ -2075,71 +1782,648 @@ function buildIntroNeck() {
   // Manche vide au départ — les notes s'affichent une par une via highlightNeckNote
 } 
 
-function runIntroSequence() {
-  const is   = document.getElementById('introScreen');
-  const titl = document.getElementById('introTitle');
-  const row  = document.getElementById('introSocksRow');
-  const introKB = document.getElementById('introKeyboard');
-
-  // Effacer les chaussettes dansantes du livre
-  const _dc = document.getElementById('introDancingSocks');
-  if (_dc) _dc.remove();
-
-  // Scènes de présentation
-  const keyPositions = [25, 75, 125, 175, 225, 275, 325];
-  const sockSizes    = [44, 36, 36, 36, 36, 36, 36]; // Do un peu plus grand — le chef !
-  const speeches = [
-    { line1: "Bonjour ! Je suis le Do,", line2: "Bonjour ! Je suis le Do,", line3: "une note-chaussette... une Sock Note !" },
-    { line1: "Moi c'est Ré !", line3: "Enchanté !" },
-    { line1: "Et moi Mi !", line3: "Ravi de vous rencontrer !" },
-    { line1: "Je suis Fa !", line3: "Bonjour !" },
-    { line1: "Moi c'est Sol !", line3: "Salut !" },
-    { line1: "Salut !", line2: "Je suis le La !", line3: "Je suis le La !" },
-    { line1: "Et moi Si !", line3: "Le dernier... mais pas le moindre !" }
+// ── PianoKit : module réutilisable pour générer/positionner n'importe quel clavier SVG ──
+// (utilisé par tous les claviers de l'application — exécuté immédiatement, indépendamment de runIntroSequence)
+(function() {
+  if (window.PianoKit) return;
+  const PK_NUM_OCTAVES = 3;
+  const PK_KB_WIDTH = 700;
+  const PK_OCTAVE_WIDTH = PK_KB_WIDTH / PK_NUM_OCTAVES;
+  const PK_WHITE_W = PK_OCTAVE_WIDTH / 7;
+  const PK_BLACK_W = PK_WHITE_W * 0.62;
+  const PK_KEY_H = 78;
+  const PK_BLACK_H = 46;
+  const PK_WHITE_CENTERS = [0,1,2,3,4,5,6].map(i => (i + 0.5) * PK_WHITE_W);
+  const PK_BLACK_AFTER_WHITE = [0, 1, 3, 4, 5];
+  const PK_CHROMA_X = [
+    { cx: PK_WHITE_CENTERS[0], isBlack: false },
+    { cx: PK_WHITE_CENTERS[0] + PK_WHITE_W/2, isBlack: true  },
+    { cx: PK_WHITE_CENTERS[1], isBlack: false },
+    { cx: PK_WHITE_CENTERS[1] + PK_WHITE_W/2, isBlack: true  },
+    { cx: PK_WHITE_CENTERS[2], isBlack: false },
+    { cx: PK_WHITE_CENTERS[3], isBlack: false },
+    { cx: PK_WHITE_CENTERS[3] + PK_WHITE_W/2, isBlack: true  },
+    { cx: PK_WHITE_CENTERS[4], isBlack: false },
+    { cx: PK_WHITE_CENTERS[4] + PK_WHITE_W/2, isBlack: true  },
+    { cx: PK_WHITE_CENTERS[5], isBlack: false },
+    { cx: PK_WHITE_CENTERS[5] + PK_WHITE_W/2, isBlack: true  },
+    { cx: PK_WHITE_CENTERS[6], isBlack: false }
   ];
+  const PK_MAJOR_INTERVALS = [2, 2, 1, 2, 2, 2, 1];
+  const PK_CHROMA_INDEX = {
+    'Do': 0, 'Ré♭': 1, 'Ré': 2, 'Mi♭': 3, 'Mi': 4, 'Fa': 5,
+    'Fa♯': 6, 'Sol': 7, 'La♭': 8, 'La': 9, 'Si♭': 10, 'Si': 11
+  };
 
-  // Phase 1 : Titre apparaît
-  setTimeout(() => { if (titl) titl.style.opacity = '1'; }, 300);
+  function pkCumulativeSemitones(d) {
+    let s = 0;
+    for (let i = 0; i < d; i++) s += PK_MAJOR_INTERVALS[i];
+    return s;
+  }
 
-  // Phase 2 : Do arrive en grand au centre, se présente
-  setTimeout(() => {
-    // Montrer piano et chaussettes
-    if (introKB) { introKB.style.transition='opacity 0.8s'; introKB.style.opacity='1'; }
-    if (row) { row.style.transition='opacity 0.8s'; row.style.opacity='1'; }
-    // Construire et afficher le manche
-    buildIntroNeck();
-    const introNeck = document.getElementById('introNeck');
-    if (introNeck) { introNeck.style.transition='opacity 0.8s'; introNeck.style.opacity='1'; }
+  // Position chromatique absolue d'un degré (0-6 = octave de départ, 7+ = octaves suivantes), pour une tonique donnée
+  function pkDegreeToKeyPos(degIdx, tonic) {
+    const d = degIdx < 7 ? degIdx : degIdx - 7;
+    const octBase = degIdx < 7 ? 0 : Math.floor(degIdx / 7);
+    const dInOct = degIdx - octBase * 7;
+    const tonicChroma = PK_CHROMA_INDEX[tonic];
+    const semis = pkCumulativeSemitones(dInOct) + octBase * 12;
+    const totalChroma = tonicChroma + semis;
+    const oct = Math.floor(totalChroma / 12);
+    const chroma = totalChroma % 12;
+    const pos = PK_CHROMA_X[chroma];
+    return { cx: pos.cx + oct * PK_OCTAVE_WIDTH, isBlack: pos.isBlack };
+  }
 
-    // Les 7 chaussettes arrivent une par une
-    for (let i = 0; i < SOCK_NOTES.length; i++) {
-      (function(idx) {
-        setTimeout(() => spawnSockOnKey(idx, row, keyPositions, sockSizes, speeches, is), idx * 3500);
-      })(i);
+  // Génère les touches blanches/noires dans les groupes SVG fournis (ids)
+  function pkBuildKeyboard(whiteGroupId, blackGroupId) {
+    const gWhite = document.getElementById(whiteGroupId);
+    const gBlack = document.getElementById(blackGroupId);
+    if (!gWhite || !gBlack) return;
+    gWhite.innerHTML = '';
+    gBlack.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    for (let oct = 0; oct < PK_NUM_OCTAVES; oct++) {
+      const ox = oct * PK_OCTAVE_WIDTH;
+      for (let w = 0; w < 7; w++) {
+        const rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', (ox + w * PK_WHITE_W + 0.5).toFixed(1));
+        rect.setAttribute('y', '0');
+        rect.setAttribute('width', (PK_WHITE_W - 1).toFixed(1));
+        rect.setAttribute('height', PK_KEY_H);
+        rect.setAttribute('rx', '3');
+        rect.setAttribute('fill', '#F5F0E8');
+        rect.setAttribute('stroke', '#9A8F88');
+        rect.setAttribute('stroke-width', '1');
+        gWhite.appendChild(rect);
+      }
+      PK_BLACK_AFTER_WHITE.forEach(w => {
+        const cx = ox + (w + 1) * PK_WHITE_W;
+        const rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', (cx - PK_BLACK_W/2).toFixed(1));
+        rect.setAttribute('y', '0');
+        rect.setAttribute('width', PK_BLACK_W.toFixed(1));
+        rect.setAttribute('height', PK_BLACK_H);
+        rect.setAttribute('rx', '2');
+        rect.setAttribute('fill', '#2A2520');
+        gBlack.appendChild(rect);
+      });
+    }
+  }
+
+  window.PianoKit = {
+    OCTAVE_WIDTH: PK_OCTAVE_WIDTH,
+    WHITE_W: PK_WHITE_W,
+    KEY_H: PK_KEY_H,
+    CHROMA_INDEX: PK_CHROMA_INDEX,
+    MAJOR_INTERVALS: PK_MAJOR_INTERVALS,
+    CHROMA_X_FOR: function(chroma) { return PK_CHROMA_X[chroma]; },
+    MAJOR_SCALES: {
+      'Do':  ['Do','Ré','Mi','Fa','Sol','La','Si'],
+      'Sol': ['Sol','La','Si','Do','Ré','Mi','Fa♯'],
+      'Ré':  ['Ré','Mi','Fa♯','Sol','La','Si','Do♯'],
+      'La':  ['La','Si','Do♯','Ré','Mi','Fa♯','Sol♯'],
+      'Mi':  ['Mi','Fa♯','Sol♯','La','Si','Do♯','Ré♯'],
+      'Si':  ['Si','Do♯','Ré♯','Mi','Fa♯','Sol♯','La♯'],
+      'Fa♯': ['Fa♯','Sol♯','La♯','Si','Do♯','Ré♯','Mi♯'],
+      'Fa':  ['Fa','Sol','La','Si♭','Do','Ré','Mi'],
+      'Si♭': ['Si♭','Do','Ré','Mi♭','Fa','Sol','La'],
+      'Mi♭': ['Mi♭','Fa','Sol','La♭','Si♭','Do','Ré'],
+      'La♭': ['La♭','Si♭','Do','Ré♭','Mi♭','Fa','Sol'],
+      'Ré♭': ['Ré♭','Mi♭','Fa','Sol♭','La♭','Si♭','Do'],
+    },
+    TONIC_ORDER: ['Do','Sol','Ré','La','Mi','Si','Fa♯','Fa','Si♭','Mi♭','La♭','Ré♭'],
+    degreeToKeyPos: pkDegreeToKeyPos,
+    buildKeyboard: pkBuildKeyboard
+  };
+})();
+
+function runIntroSequence() {
+  const is  = document.getElementById('introScreen');
+  const row = document.getElementById('introSocksRow');
+
+  // ── Gammes majeures : 12 toniques × 7 notes ──
+  if (!window.PianoKit) {
+    const PK_NUM_OCTAVES = 3;
+    const PK_KB_WIDTH = 700;
+    const PK_OCTAVE_WIDTH = PK_KB_WIDTH / PK_NUM_OCTAVES;
+    const PK_WHITE_W = PK_OCTAVE_WIDTH / 7;
+    const PK_BLACK_W = PK_WHITE_W * 0.62;
+    const PK_KEY_H = 78;
+    const PK_BLACK_H = 46;
+    const PK_WHITE_CENTERS = [0,1,2,3,4,5,6].map(i => (i + 0.5) * PK_WHITE_W);
+    const PK_BLACK_AFTER_WHITE = [0, 1, 3, 4, 5];
+    const PK_CHROMA_X = [
+      { cx: PK_WHITE_CENTERS[0], isBlack: false },
+      { cx: PK_WHITE_CENTERS[0] + PK_WHITE_W/2, isBlack: true  },
+      { cx: PK_WHITE_CENTERS[1], isBlack: false },
+      { cx: PK_WHITE_CENTERS[1] + PK_WHITE_W/2, isBlack: true  },
+      { cx: PK_WHITE_CENTERS[2], isBlack: false },
+      { cx: PK_WHITE_CENTERS[3], isBlack: false },
+      { cx: PK_WHITE_CENTERS[3] + PK_WHITE_W/2, isBlack: true  },
+      { cx: PK_WHITE_CENTERS[4], isBlack: false },
+      { cx: PK_WHITE_CENTERS[4] + PK_WHITE_W/2, isBlack: true  },
+      { cx: PK_WHITE_CENTERS[5], isBlack: false },
+      { cx: PK_WHITE_CENTERS[5] + PK_WHITE_W/2, isBlack: true  },
+      { cx: PK_WHITE_CENTERS[6], isBlack: false }
+    ];
+    const PK_MAJOR_INTERVALS = [2, 2, 1, 2, 2, 2, 1];
+    const PK_CHROMA_INDEX = {
+      'Do': 0, 'Ré♭': 1, 'Ré': 2, 'Mi♭': 3, 'Mi': 4, 'Fa': 5,
+      'Fa♯': 6, 'Sol': 7, 'La♭': 8, 'La': 9, 'Si♭': 10, 'Si': 11
+    };
+
+    function pkCumulativeSemitones(d) {
+      let s = 0;
+      for (let i = 0; i < d; i++) s += PK_MAJOR_INTERVALS[i];
+      return s;
     }
 
-    // Message clôture
-    const totalDelay = 7 * 3500 + 1000;
-    setTimeout(() => {
-      const closing = document.getElementById('introClosing');
-      if (closing) closing.style.opacity = '1';
-    }, totalDelay);
+    // Position chromatique absolue d'un degré (0-6 = octave de départ, 7+ = octaves suivantes), pour une tonique donnée
+    function pkDegreeToKeyPos(degIdx, tonic) {
+      const d = degIdx < 7 ? degIdx : degIdx - 7;
+      const octBase = degIdx < 7 ? 0 : Math.floor(degIdx / 7);
+      const dInOct = degIdx - octBase * 7;
+      const tonicChroma = PK_CHROMA_INDEX[tonic];
+      const semis = pkCumulativeSemitones(dInOct) + octBase * 12;
+      const totalChroma = tonicChroma + semis;
+      const oct = Math.floor(totalChroma / 12);
+      const chroma = totalChroma % 12;
+      const pos = PK_CHROMA_X[chroma];
+      return { cx: pos.cx + oct * PK_OCTAVE_WIDTH, isBlack: pos.isBlack };
+    }
 
-    // Danse finale
-    setTimeout(() => {
-      [...row.children].forEach((div, i) => {
-        setTimeout(() => { div.style.animation='introDance 0.7s ease-in-out 3'; }, i*100);
-      });
-    }, totalDelay + 1000);
-
-    // Fondu final
-    setTimeout(() => {
-      if (is) {
-        is.style.transition='opacity 1.2s'; is.style.opacity='0';
-        setTimeout(()=>{ is.style.display='none'; showPageAfterIntro(); buildControls(); render(); buildSocksRow(); },1200);
+    // Génère les touches blanches/noires dans les groupes SVG fournis (ids)
+    function pkBuildKeyboard(whiteGroupId, blackGroupId) {
+      const gWhite = document.getElementById(whiteGroupId);
+      const gBlack = document.getElementById(blackGroupId);
+      if (!gWhite || !gBlack) return;
+      gWhite.innerHTML = '';
+      gBlack.innerHTML = '';
+      const ns = 'http://www.w3.org/2000/svg';
+      for (let oct = 0; oct < PK_NUM_OCTAVES; oct++) {
+        const ox = oct * PK_OCTAVE_WIDTH;
+        for (let w = 0; w < 7; w++) {
+          const rect = document.createElementNS(ns, 'rect');
+          rect.setAttribute('x', (ox + w * PK_WHITE_W + 0.5).toFixed(1));
+          rect.setAttribute('y', '0');
+          rect.setAttribute('width', (PK_WHITE_W - 1).toFixed(1));
+          rect.setAttribute('height', PK_KEY_H);
+          rect.setAttribute('rx', '3');
+          rect.setAttribute('fill', '#F5F0E8');
+          rect.setAttribute('stroke', '#9A8F88');
+          rect.setAttribute('stroke-width', '1');
+          gWhite.appendChild(rect);
+        }
+        PK_BLACK_AFTER_WHITE.forEach(w => {
+          const cx = ox + (w + 1) * PK_WHITE_W;
+          const rect = document.createElementNS(ns, 'rect');
+          rect.setAttribute('x', (cx - PK_BLACK_W/2).toFixed(1));
+          rect.setAttribute('y', '0');
+          rect.setAttribute('width', PK_BLACK_W.toFixed(1));
+          rect.setAttribute('height', PK_BLACK_H);
+          rect.setAttribute('rx', '2');
+          rect.setAttribute('fill', '#2A2520');
+          gBlack.appendChild(rect);
+        });
       }
-    }, totalDelay + 12000);
-  }, 800);
+    }
+
+    window.PianoKit = {
+      OCTAVE_WIDTH: PK_OCTAVE_WIDTH,
+      WHITE_W: PK_WHITE_W,
+      KEY_H: PK_KEY_H,
+      CHROMA_INDEX: PK_CHROMA_INDEX,
+      MAJOR_INTERVALS: PK_MAJOR_INTERVALS,
+      CHROMA_X_FOR: function(chroma) { return PK_CHROMA_X[chroma]; },
+      MAJOR_SCALES: {
+        'Do':  ['Do','Ré','Mi','Fa','Sol','La','Si'],
+        'Sol': ['Sol','La','Si','Do','Ré','Mi','Fa♯'],
+        'Ré':  ['Ré','Mi','Fa♯','Sol','La','Si','Do♯'],
+        'La':  ['La','Si','Do♯','Ré','Mi','Fa♯','Sol♯'],
+        'Mi':  ['Mi','Fa♯','Sol♯','La','Si','Do♯','Ré♯'],
+        'Si':  ['Si','Do♯','Ré♯','Mi','Fa♯','Sol♯','La♯'],
+        'Fa♯': ['Fa♯','Sol♯','La♯','Si','Do♯','Ré♯','Mi♯'],
+        'Fa':  ['Fa','Sol','La','Si♭','Do','Ré','Mi'],
+        'Si♭': ['Si♭','Do','Ré','Mi♭','Fa','Sol','La'],
+        'Mi♭': ['Mi♭','Fa','Sol','La♭','Si♭','Do','Ré'],
+        'La♭': ['La♭','Si♭','Do','Ré♭','Mi♭','Fa','Sol'],
+        'Ré♭': ['Ré♭','Mi♭','Fa','Sol♭','La♭','Si♭','Do'],
+      },
+      TONIC_ORDER: ['Do','Sol','Ré','La','Mi','Si','Fa♯','Fa','Si♭','Mi♭','La♭','Ré♭'],
+      degreeToKeyPos: pkDegreeToKeyPos,
+      buildKeyboard: pkBuildKeyboard
+    };
+  }
+
+  const MAJOR_SCALES = window.PianoKit.MAJOR_SCALES;
+  const TONIC_ORDER = window.PianoKit.TONIC_ORDER;
+  const CHROMA_INDEX = window.PianoKit.CHROMA_INDEX;
+
+  let _currentTonic = 'Do';
+  let _seqTimers = [];
+
+  function buildNotesData(tonic) {
+    const sc = MAJOR_SCALES[tonic];
+    const degNames = ['la tonique','la seconde','la tierce','la quarte','la dominante','la sixte','la sensible'];
+    const phrases = [
+      `Degré 1 — la tonique. C'est ${sc[0]} qui donne son nom à la tonalité. Quand la musique est tonale, tout part d'elle — c'est le point d'ancrage à la terre.`,
+      `Degré 2 — la seconde. ${sc[1]}, deux demi-tons au-dessus de la tonique. Elle crée le mouvement, l'élan.`,
+      `Degré 3 — la tierce. ${sc[2]} définit le mode : majeure ici, elle donne à la gamme sa couleur lumineuse.`,
+      `Degré 4 — la quarte. ${sc[3]}, le pivot de la gamme. Elle introduit une légère tension vers la dominante.`,
+      `Degré 5 — la dominante. ${sc[4]}, la plus importante après la tonique. Elle appelle le retour à ${sc[0]}.`,
+      `Degré 6 — la sixte. ${sc[5]}, douce et expressive — c'est elle qu'on fredonne naturellement.`,
+      `Degré 7 — la sensible. ${sc[6]}, à un demi-ton de ${sc[0]}, elle veut résoudre. Elle crée la tension finale.`,
+    ];
+    return [
+      { name:sc[0], deg:1,  degName:'la tonique',   phrase:phrases[0] },
+      { name:sc[1], deg:2,  degName:'la seconde',   phrase:phrases[1] },
+      { name:sc[2], deg:3,  degName:'la tierce',    phrase:phrases[2] },
+      { name:sc[3], deg:4,  degName:'la quarte',    phrase:phrases[3] },
+      { name:sc[4], deg:5,  degName:'la dominante', phrase:phrases[4] },
+      { name:sc[5], deg:6,  degName:'la sixte',     phrase:phrases[5] },
+      { name:sc[6], deg:7,  degName:'la sensible',  phrase:phrases[6] },
+      { name:sc[0], deg:8,  degName:"l'octave",     phrase:`Degré 8 — l'octave. Le même ${sc[0]}, une octave plus haut. La gamme est complète — et peut continuer.` },
+      { name:sc[1], deg:9,  degName:'la neuvième',  phrase:`Degré 9 — la neuvième. ${sc[1]} de l'octave supérieure. Très utilisée dans le jazz pour colorer les accords.` },
+      { name:sc[2], deg:10, degName:'la dixième',   phrase:`Degré 10 — la dixième. ${sc[2]} une octave plus haut. Extension douce, qui enrichit sans tension.` },
+      { name:sc[3], deg:11, degName:'la onzième',   phrase:`Degré 11 — la onzième. ${sc[3]} étendu. Dans sa version augmentée, elle est au cœur du mode Lydien.` },
+      { name:sc[5], deg:13, degName:'la treizième', phrase:`Degré 13 — la treizième. ${sc[5]} de la deuxième octave. Elle couronne les grands accords de jazz.` },
+    ];
+  }
+
+
+  const SOCK_COLORS = [
+    '#E8453C','#F4A020','#E8D000','#3CB878','#3A8FE8','#8060D0','#C060D8',
+    '#E8453C','#F4A020','#E8D000','#3CB878','#3A8FE8','#8060D0'
+  ];
+  const KEY_X = [
+    25, 75, 125, 175, 225, 275, 325,
+    376, 376, 426, 476, 526, 626
+  ];
+  const KEY_PCT = [
+    3.6, 10.7, 17.9, 25.0, 32.1, 39.3, 46.4,
+    53.7, 53.7, 60.9, 68.0, 75.1, 89.4
+  ];
+
+  // ── Positionnement CHROMATIQUE réel sur le clavier dessiné (délègue à PianoKit) ──
+  const OCTAVE_WIDTH = window.PianoKit.OCTAVE_WIDTH;
+  const WHITE_W = window.PianoKit.WHITE_W;
+  const KEY_H = window.PianoKit.KEY_H;
+
+  function degreeToKeyPos(degIdx) {
+    return window.PianoKit.degreeToKeyPos(degIdx, _currentTonic);
+  }
+
+  function noteKeyPos(degIdx) {
+    return degreeToKeyPos(degIdx);
+  }
+
+  // ── Génère dynamiquement le clavier (touches blanches/noires) sur 3 octaves ──
+  function buildIntroKeyboard() {
+    window.PianoKit.buildKeyboard('keyboardWhiteKeys', 'keyboardBlackKeys');
+  }
+  buildIntroKeyboard();
+
+  const labelEl  = document.getElementById('introNoteLabel');
+  const numEl    = document.getElementById('introNoteNum');
+  const phraseEl = document.getElementById('introNotePhrase');
+  const closing  = document.getElementById('introClosing');
+
+
+  // Afficher le piano et le manche dès le départ
+  const introNeck = document.getElementById('introNeck');
+  if (introNeck) introNeck.style.opacity = '1';
+
+  // ── Mise à jour labels + cadre de gamme selon tonique ──
+  function updatePianoLabels(tonic) {
+    const sc = MAJOR_SCALES[tonic];
+    const gLabels = document.getElementById('keyboardLabels');
+    const gDegrees = document.getElementById('keyboardDegrees');
+    if (!gLabels || !gDegrees) return;
+    gLabels.innerHTML = '';
+    gDegrees.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+
+    // Labels + numéros pour les degrés 1-7 (1ère octave) et leur écho en octave 2 (degré 8 = tonique répétée)
+    for (let i = 1; i <= 7; i++) {
+      const d = i - 1;
+      const pos = degreeToKeyPos(d);       // 1ère apparition (degrés 1-7)
+      const pos2 = degreeToKeyPos(d + 7);  // écho octave suivante (degrés 8-14, on l'utilise pour 8-13 réels)
+      const items = [ {pos: pos, num: i} ];
+        // Ajouter l'écho octave suivante seulement jusqu'au degré 13 (La = i≤6, num≤13)
+        const num2 = i === 7 ? 14 : i + 7;
+        if (num2 <= 13) items.push({pos: pos2, num: num2});
+        items.forEach(({pos, num}) => {
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', pos.cx);
+        t.setAttribute('y', pos.isBlack ? '38' : '60');
+        t.setAttribute('text-anchor', 'middle');
+        t.setAttribute('font-size', '11');
+        t.setAttribute('font-family', 'Arial');
+        t.setAttribute('font-weight', 'bold');
+        t.setAttribute('fill', pos.isBlack ? '#F0E8D8' : '#2A1A08');
+        t.textContent = sc[d];
+        gLabels.appendChild(t);
+
+        const n = document.createElementNS(ns, 'text');
+        n.setAttribute('x', pos.cx - 9);
+        n.setAttribute('y', pos.isBlack ? '50' : '73');
+        n.setAttribute('text-anchor', 'middle');
+        n.setAttribute('font-size', '10');
+        n.setAttribute('font-family', 'Arial');
+        n.setAttribute('font-weight', 'bold');
+        n.setAttribute('fill', num <= 7 ? '#D4A843' : '#C49030');
+        n.textContent = num;
+        gDegrees.appendChild(n);
+      });
+    }
+
+    // Cadre visuel encadrant la 1ère octave (la gamme de base, degrés 1 à 7)
+    const frame = document.getElementById('scaleFrame');
+    if (frame) {
+      const firstPos = degreeToKeyPos(0);
+      const lastPos = degreeToKeyPos(6);
+      const margin = WHITE_W * 0.32;
+      const left = Math.min(firstPos.cx, lastPos.cx) - WHITE_W/2 - margin/2;
+      const right = Math.max(firstPos.cx, lastPos.cx) + WHITE_W/2 + margin/2;
+      frame.setAttribute('x', (left).toFixed(1));
+      frame.setAttribute('width', (right - left).toFixed(1));
+      frame.setAttribute('y', '-3');
+      frame.setAttribute('height', (KEY_H + 6).toFixed(1));
+      frame.setAttribute('opacity', '0.85');
+    }
+  }
+
+  // ── Sélecteur de tonique ──
+  // Désactivé sur cette page : le premier cycle reste figé en Do.
+  // Le choix de tonique (et l'introduction dièse/bémol) se fait sur l'écran suivant.
+  // Code conservé en commentaire pour réutilisation :
+  /*
+  const tonicRow = document.getElementById('introTonicRow');
+  if (tonicRow) {
+    TONIC_ORDER.forEach(t => {
+      const btn = document.createElement('button');
+      btn.textContent = t;
+      btn.style.cssText = `
+        background: ${t === _currentTonic ? 'linear-gradient(135deg,#C9A84C,#8B6914)' : 'rgba(255,255,255,0.07)'};
+        color: ${t === _currentTonic ? '#0D1117' : '#A8C4D8'};
+        border: 1px solid ${t === _currentTonic ? '#C9A84C' : 'rgba(255,255,255,0.15)'};
+        padding: 5px 11px; border-radius: 16px; font-size: 13px; font-weight: 600;
+        cursor: pointer; font-family: 'Cormorant Garamond', Georgia, serif;
+        transition: all 0.2s; letter-spacing: 0.5px;
+      `;
+      btn.onclick = () => {
+        if (t === _currentTonic) return;
+        _currentTonic = t;
+        tonicRow.querySelectorAll('button').forEach(b => {
+          const active = b.textContent === t;
+          b.style.background = active ? 'linear-gradient(135deg,#C9A84C,#8B6914)' : 'rgba(255,255,255,0.07)';
+          b.style.color = active ? '#0D1117' : '#A8C4D8';
+          b.style.borderColor = active ? '#C9A84C' : 'rgba(255,255,255,0.15)';
+        });
+        const sub = document.getElementById('introSubtitle');
+        if (sub) sub.innerHTML = `<strong style="color:#F4D03F">${t}</strong> est choisie comme tonique — la note qui donne le ton —<br>c'est le point de départ. Les 7 degrés se déclinent à partir d'elle... une fois sélectionnée, la tonique sera le point de départ et les chiffres de 1 à 13 se déclinent en séquence en partant de cette note.`;
+        _seqTimers.forEach(id => clearTimeout(id));
+        _seqTimers = [];
+        if (row) row.innerHTML = '';
+        const ph = document.getElementById('pianoHighlights');
+        if (ph) ph.innerHTML = '';
+        const nd = document.getElementById('introNeckDots');
+        if (nd) nd.innerHTML = '';
+        if (labelEl)  { labelEl.innerHTML = ''; }
+        if (phraseEl) { phraseEl.innerHTML = ''; }
+        if (numEl)    { numEl.textContent = ''; }
+        const bubble = document.getElementById('introBubble');
+        if (bubble) bubble.remove();
+        if (closing) closing.style.opacity = '0';
+        const oldBtnRow = document.getElementById('introBtnRow');
+        if (oldBtnRow) oldBtnRow.remove();
+        const recap = document.getElementById('introMotsCles');
+        if (recap) { recap.style.display = 'none'; recap.innerHTML = ''; }
+        updatePianoLabels(t);
+        launchSequence();
+      };
+      tonicRow.appendChild(btn);
+    });
+  }
+  */
+
+  // Initialiser les labels piano en Do (figé pour ce premier cycle)
+  updatePianoLabels(_currentTonic);
+
+  // Surbrillance piano — cercle sur la bonne touche selon la position dans la gamme
+  function highlightPianoKey(idx, degNum, noteName) {
+    const svg = document.getElementById('introKeyboard');
+    if (!svg) return;
+    const old = svg.querySelector('#pianoHighlights');
+    if (old) old.innerHTML = '';
+    const g = old || document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.id = 'pianoHighlights';
+
+    const pos = noteKeyPos(idx);
+    const cx = pos.cx;
+    const cy = 30;
+    const color = SOCK_COLORS[idx];
+
+    const halo = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    halo.setAttribute('cx', cx); halo.setAttribute('cy', cy);
+    halo.setAttribute('r', '22'); halo.setAttribute('fill', color); halo.setAttribute('opacity','0.25');
+    g.appendChild(halo);
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', '14'); c.setAttribute('fill', color); c.setAttribute('opacity','0.85');
+    g.appendChild(c);
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', cx); t.setAttribute('y', cy + 5);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size', degNum > 9 ? '10' : '13');
+    t.setAttribute('font-weight','700');
+    t.setAttribute('fill','#fff'); t.setAttribute('font-family','Inter,sans-serif');
+    t.textContent = degNum;
+    g.appendChild(t);
+    if (!old) svg.appendChild(g);
+  }
+
+  // Chaussette dans la row
+  function spawnSock(idx) {
+    if (!row) return;
+    const n = SOCK_NOTES[idx];
+    const sockW = idx === 0 ? 52 : 42;
+    const div = document.createElement('div');
+    div.style.cssText = `
+      position:absolute;
+      left:calc(${KEY_PCT[idx]}% - ${sockW/2}px);
+      bottom:0;
+      opacity:0;
+      transform:translateY(30px) scale(0.5);
+      transition: opacity 0.5s, transform 0.6s cubic-bezier(.34,1.56,.64,1);
+      width:${sockW}px;
+    `;
+    div.innerHTML = makeSockSVG(n, sockW);
+    row.appendChild(div);
+    setTimeout(() => {
+      div.style.opacity = '1';
+      div.style.transform = 'translateY(0) scale(1)';
+    }, 80);
+  }
+
+  // Séquence note par note
+  const STEP_SLOW = 6000; // ms pour degrés 1-7
+  const STEP_EXT  = 5000; // ms pour extensions 9-13
+
+  // Bulle "Et ce n'est pas fini..."
+  function showBubble() {
+    const bubble = document.createElement('div');
+    bubble.id = 'introBubble';
+    bubble.style.cssText = `
+      position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.5);
+      background:rgba(201,168,76,0.15); border:2px solid #C9A84C;
+      border-radius:20px; padding:18px 32px; z-index:2000;
+      font-family:'Cormorant Garamond',Georgia,serif; font-size:26px;
+      color:#F4D03F; font-style:italic; text-align:center;
+      backdrop-filter:blur(8px); opacity:0;
+      transition: opacity 0.6s, transform 0.6s cubic-bezier(.34,1.56,.64,1);
+      pointer-events:none; white-space:nowrap;
+    `;
+    bubble.textContent = 'Et ce n\'est pas fini…';
+    document.body.appendChild(bubble);
+    setTimeout(() => { bubble.style.opacity='1'; bubble.style.transform='translate(-50%,-50%) scale(1)'; }, 50);
+    setTimeout(() => { bubble.style.opacity='0'; bubble.style.transform='translate(-50%,-50%) scale(0.8)'; }, 2800);
+    setTimeout(() => bubble.remove(), 3500);
+  }
+
+  function showNote(nd) {
+    if (numEl)    { numEl.style.opacity='0';    setTimeout(()=>{ numEl.textContent = nd.deg;    numEl.style.opacity='1'; }, 100); }
+    if (labelEl)  { labelEl.style.opacity='0';  setTimeout(()=>{ labelEl.innerHTML = `${nd.name} <span style="font-size:22px; color:#C9A84C; font-weight:400; letter-spacing:1px;">— ${nd.degName}</span>`; labelEl.style.opacity='1'; }, 150); }
+    if (phraseEl) { phraseEl.style.opacity='0'; setTimeout(()=>{ phraseEl.innerHTML = nd.phrase.replace(/Degré (\d+)/g, '<span class="mot-cle">Degré $1</span>'); phraseEl.style.opacity='1'; }, 250); }
+  }
+
+  function launchSequence() {
+    const NOTES_DATA = buildNotesData(_currentTonic);
+
+    // Degrés 1-7
+    const FIRST_7 = NOTES_DATA.slice(0, 7);
+    FIRST_7.forEach((nd, i) => {
+      const id = setTimeout(() => {
+        showNote(nd);
+        highlightPianoKey(i, nd.deg, nd.name);
+        highlightNeckNote(nd.name);
+        spawnSock(i);
+      }, i * STEP_SLOW);
+      _seqTimers.push(id);
+    });
+
+    // Degré 8 — tonique octave + bulle
+    const t8 = 7 * STEP_SLOW;
+    const id8 = setTimeout(() => {
+      const nd = NOTES_DATA[7];
+      showNote(nd);
+      highlightPianoKey(7, nd.deg, nd.name);
+      highlightNeckNote(nd.name);
+      spawnSock(7);
+      setTimeout(() => showBubble(), 2000);
+    }, t8);
+    _seqTimers.push(id8);
+
+    // Extensions 9, 10, 11, 13
+    const EXTENSIONS = NOTES_DATA.slice(8);
+    EXTENSIONS.forEach((nd, i) => {
+      const t = t8 + STEP_SLOW + 1000 + (i * STEP_EXT);
+      const id = setTimeout(() => {
+        showNote(nd);
+        const pianoIdx = nd.deg - 1; // index 0-based réel, tient compte du degré 12 sauté
+        highlightPianoKey(pianoIdx, nd.deg, nd.name);
+        highlightNeckNote(nd.name);
+        spawnSock(pianoIdx);
+      }, t);
+      _seqTimers.push(id);
+    });
+
+    // Message de clôture
+    const totalDelay = t8 + STEP_SLOW + 1000 + EXTENSIONS.length * STEP_EXT + 800;
+    const idClose = setTimeout(() => {
+      if (numEl)    { numEl.style.opacity='0'; }
+      if (labelEl)  { labelEl.style.opacity='0'; }
+      if (phraseEl) { phraseEl.style.opacity='0'; }
+      if (closing)  {
+        // Ajouter le bienvenue personnalisé si disponible
+        if (window._introBienvenueProfil && !closing.querySelector('.welcome-msg')) {
+          const p = window._introBienvenueProfil;
+          const welcome = document.createElement('div');
+          welcome.className = 'welcome-msg';
+          welcome.style.cssText = 'font-size:17px; color:#F4D03F; margin-top:10px; font-style:italic;';
+          welcome.textContent = 'Bienvenue ' + p.prenom + ' ' + (p.avatar || '🎵');
+          closing.appendChild(welcome);
+        }
+        closing.style.opacity = '1';
+      }
+      [...(row ? row.children : [])].forEach((div, i) => {
+        setTimeout(() => { div.style.animation='introDance 0.7s ease-in-out 3'; }, i * 120);
+      });
+
+      // Récap mots-clés
+      const MOTS = ['Note', 'Degré', 'Tonique', 'Gamme', 'Intervalle', 'Accord', 'Tonalité'];
+      const recap = document.getElementById('introMotsCles');
+      if (recap) {
+        recap.style.display = 'block';
+        recap.innerHTML = `<div style="font-size:14px; color:#FFFFFF; font-style:italic; margin-bottom:14px; letter-spacing:0.3px;">Quelques mots du vocabulaire musical, que vous retrouverez bientôt</div>`;
+        MOTS.forEach((mot, i) => {
+          setTimeout(() => {
+            recap.innerHTML = `<div style="font-size:14px; color:#FFFFFF; font-style:italic; margin-bottom:14px; letter-spacing:0.3px;">Quelques mots du vocabulaire musical, que vous retrouverez bientôt</div><span style="font-family:'Cormorant Garamond',Georgia,serif; font-size:42px; font-weight:700; color:#48C9B0; letter-spacing:3px; animation:motCleBlink 0.8s ease-in-out 3;">${mot}</span>`;
+          }, 2000 + i * 2200);
+        });
+        setTimeout(() => { recap.style.display='none'; }, 2000 + MOTS.length * 2200 + 500);
+      }
+    }, totalDelay);
+    _seqTimers.push(idClose);
+
+    // Fin de séquence — afficher les deux boutons au lieu du fondu automatique
+    const recapDuration = 2000 + 7 * 2200 + 2000;
+    const idFade = setTimeout(() => {
+      if (!document.getElementById('introScreen')) return;
+
+      // Faire apparaître le bouton dans introClosing
+      const closing = document.getElementById('introClosing');
+      if (closing) {
+        const btnRow = document.createElement('div');
+        btnRow.id = 'introBtnRow';
+        btnRow.style.cssText = 'display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:20px;';
+
+        // Bouton "Continuer" — mène au retour sur les mots, puis à l'application
+        const btnEnter = document.createElement('button');
+        btnEnter.innerHTML = '✓ Continuer';
+        btnEnter.style.cssText = 'background:linear-gradient(135deg,#C9A84C,#8B6914); color:#0D1117; border:none; padding:11px 22px; border-radius:20px; font-size:15px; font-family:\'Cormorant Garamond\',Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px; transition:all 0.2s;';
+        btnEnter.onclick = () => {
+          const is2 = document.getElementById('introScreen');
+          if (is2) {
+            is2.style.transition='opacity 1.2s'; is2.style.opacity='0';
+            setTimeout(()=>{
+              is2.remove();
+              _preloadAudio.loop = false;
+              showMotsRetourScreen(() => {
+                showMotsAltIntroScreen(() => {
+                  showDouzeNotesScreen(() => {
+                    showMotsAltRetourScreen(() => {
+                      showPageAfterIntro();
+                    });
+                  });
+                });
+              });
+            }, 1200);
+          }
+        };
+
+        btnRow.appendChild(btnEnter);
+        closing.appendChild(btnRow);
+        closing.style.opacity = '1';
+      }
+    }, totalDelay + recapDuration);
+    _seqTimers.push(idFade);
+  }
+
+  launchSequence();
 }
 
 function spawnSockOnKey(i, row, keyPositions, sockSizes, speeches, is) {
@@ -2173,7 +2457,7 @@ function spawnSockOnKey(i, row, keyPositions, sockSizes, speeches, is) {
       : `${sp.line1}<br>${sp.line3}`;
     div.appendChild(bubble);
     setTimeout(() => bubble.style.opacity = '1', 50);
-    is.style.background = `linear-gradient(160deg, ${n.color}33 0%, #2a4a6a 60%, #2e5070 100%)`;
+    is.style.background = `linear-gradient(160deg, ${n.color}22 0%, #1a2d42 60%, #1e3450 100%)`;
   }, 400);
 }
 
@@ -2184,6 +2468,12 @@ function runIntro() {
     showPageAfterIntro(); buildControls(); render(); buildSocksRow();
     document.getElementById("pageTitle").classList.add("level-side");
     return;
+  }
+  // Révéler l'introScreen seulement ici (il démarre en display:none)
+  // Sauf si un profil existe — dans ce cas appliquerProfil/DOMContentLoaded gère l'affichage
+  if (!localStorage.getItem('hm_profil')) {
+    is.style.display = 'flex';
+    is.style.opacity = '1';
   }
   // Tirer une combinaison au hasard
   pickIntroVariant();
@@ -2207,10 +2497,6 @@ function pickIntroVariant() {
 
   const v = VARIANTS[Math.floor(Math.random() * VARIANTS.length)];
   console.log('🎵 Intro variant:', v.name);
-
-  // ── B : fond sous-marin ──
-  const seaBg = document.getElementById('seaBg');
-  if (seaBg) seaBg.style.display = v.sea ? '' : 'none';
 
   // ── D : notes flottantes ──
   document.querySelectorAll('.float-note, .float-note-drift').forEach(el => {
@@ -2586,7 +2872,7 @@ function closeSubPage() {
   document.getElementById('subPageTest').style.display = 'none';
   document.getElementById('controls').style.display = '';
   const sw = document.querySelector('.stage-wrap');
-  if (sw) sw.style.display = '';
+  if (sw) sw.style.display = level === 0 ? 'none' : '';
   const calc = document.getElementById('intervalCalc');
   if (calc) { calc.style.display = 'flex'; calc.style.visibility = 'visible'; }
   const pt = document.getElementById('pageTitle');
@@ -2749,6 +3035,21 @@ function buildControls() {
   const c = document.getElementById("controls");
   c.innerHTML = "";
   const cfg = LEVELS[level];
+
+  // Rendre le conteneur scrollable
+  c.style.overflowY = 'auto';
+  c.style.webkitOverflowScrolling = 'touch';
+  c.style.paddingBottom = '80px';
+
+  // Pour le niveau 0, cacher le stage-wrap entier et ne pas limiter la hauteur
+  const stageWrap = document.querySelector('.stage-wrap');
+  if (level === 0) {
+    if (stageWrap) stageWrap.style.display = 'none';
+    c.style.maxHeight = 'calc(100vh - 60px)';
+  } else {
+    if (stageWrap) stageWrap.style.display = '';
+    c.style.maxHeight = 'calc(100vh - 60px)';
+  }
 
   // Espaceur adaptatif : plus grand quand peu de contrôles (niveaux 1 et 2)
   const spacerPx = { 0: 10, 1: 60, 2: 40, 3: 20, 4: 0, 5: 0, 6: 0 }[level] || 0;
@@ -3119,6 +3420,8 @@ function render() {
 
   if (level === 0) {
     if (stageMain) stageMain.style.display = "none";
+    const sw = document.querySelector('.stage-wrap');
+    if (sw) sw.style.display = 'none';
     const ctrl = document.getElementById("controls");
     if (ctrl) { ctrl.style.display = "block"; ctrl.style.visibility = "visible"; }
     renderInterval();
@@ -3126,6 +3429,8 @@ function render() {
   }
   // Réafficher le stage pour les autres niveaux
   if (stageMain) stageMain.style.display = "";
+  const sw0 = document.querySelector('.stage-wrap');
+  if (sw0) sw0.style.display = '';
   if (stageInnerEl) stageInnerEl.style.display = "block";
   const l0 = document.getElementById("level0Layout");
   if (l0) l0.style.display = "none";
@@ -3696,26 +4001,56 @@ function animBldBirds(){
 /* ===================== INIT ===================== */
 
 function hidePageDuringIntro() {
-  ['pageTitle','musicNumbers','pageSubtitle','levelMsg',
-   'controls','formulaTop','level0Layout','stageMain','city-life','nyc-bg',
-   'levelTabs','socksRow','sessionTimer','intervalCalc'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.visibility = 'hidden';
-  });
-  document.querySelectorAll('.level-switcher, .top-name').forEach(el => el.style.visibility = 'hidden');
+  // L'introScreen est en z-index:1000 et couvre tout — rien à cacher
 }
 
-function showPageAfterIntro() {
-  ['pageTitle','musicNumbers','pageSubtitle','levelMsg',
-   'controls','formulaTop','level0Layout','stageMain','city-life','nyc-bg',
-   'levelTabs','socksRow','sessionTimer','intervalCalc'].forEach(id => {
+// Permet à l'utilisateur de sauter toute la séquence pédagogique d'intro (numéros, mots, animation)
+window.skipIntroSequence = function() {
+  ['numerosScreen', 'motsIntroScreen'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.visibility = '';
+    if (el) el.remove();
   });
-  document.querySelectorAll('.level-switcher, .top-name').forEach(el => el.style.visibility = '');
-  // Le timer de session prend la place bas-gauche → on retire le crédit intro
+  const introScreenEl = document.getElementById('introScreen');
+  if (introScreenEl && typeof skipIntro === 'function') {
+    // L'écran d'animation est actif : on réutilise skipIntro() qui gère l'audio proprement
+    skipIntro();
+  } else {
+    showPageAfterIntro();
+  }
+  if (typeof buildControls === 'function') buildControls();
+  if (typeof render === 'function') render();
+  if (typeof buildSocksRow === 'function') buildSocksRow();
+};
+
+function showPageAfterIntro() {
+  // Rideau opaque (même couleur que les écrans d'intro) posé par-dessus tout,
+  // le temps que le contenu principal soit révélé/construit — évite le flash
+  // du contenu qui apparaît brutalement pendant qu'un écran précédent s'efface encore.
+  const curtain = document.createElement('div');
+  curtain.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:#0d1b2a; z-index:9600; opacity:1; pointer-events:none;';
+  document.body.appendChild(curtain);
+
+  const is = document.getElementById('introScreen');
+  if (is) is.remove();  // S'assurer que tout est visible — sauf les éléments qui doivent rester cachés
+  document.querySelectorAll('[style*="visibility"]').forEach(el => el.style.visibility = '');
+  // Ne PAS toucher aux sous-pages, éléments masqués par logique applicative
+  const keepHidden = ['musicNumbers','formulaTop','intervalCalc','profilScreen','levelSelect',
+                      'subPageCalc','subPageTest','buildingWrap','introMotsCles'];
+  document.querySelectorAll('[style*="display:none"]').forEach(el => {
+    if (!keepHidden.some(id => el.id === id)) el.style.display = '';
+  });
+  buildControls();
+  render();
+  buildSocksRow();
+  const timer = document.getElementById('sessionTimer');
+  if (timer) { timer.style.transition='opacity 1.5s'; timer.style.opacity = '1'; }
   const credit = document.getElementById('authorCredit');
-  if (credit) { credit.style.transition = 'opacity 1s'; credit.style.opacity = '0'; setTimeout(() => credit.style.display='none', 1000); }
+  if (credit) { credit.style.display='none'; }
+
+  // Le contenu est maintenant construit derrière le rideau : on le lève en douceur
+  curtain.style.transition = 'opacity 0.6s ease';
+  setTimeout(() => { curtain.style.opacity = '0'; }, 30);
+  setTimeout(() => { curtain.remove(); }, 650);
 }
 
 // ===================== SYSTÈME DE VOIX NARRATIVE =====================
@@ -3849,11 +4184,11 @@ function addScrollIndicator(container) {
   // Barre YouTube
   const bar = document.createElement('div');
   bar.id = 'scrollProgress';
-  bar.style.cssText = 'position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,#F4D03F,#E8A835);z-index:9999;border-radius:0 2px 2px 0;transition:width 0.1s;pointer-events:none;box-shadow:0 0 8px rgba(244,208,63,0.6);';
+  bar.style.cssText = 'position:fixed;top:0;left:0;height:4px;width:0%;background:linear-gradient(90deg,#F4D03F,#E8A835);z-index:9999;border-radius:0 2px 2px 0;transition:width 0.1s;pointer-events:none;box-shadow:0 0 8px rgba(244,208,63,0.6);opacity:0;';
   document.body.appendChild(bar);
-  bar.style.width = '15%';
+  bar.style.width = '15%'; bar.style.opacity = '1';
   bar.style.animation = 'barPulse 0.8s ease-in-out 2';
-  setTimeout(() => { bar.style.animation = ''; bar.style.width = '0%'; }, 1800);
+  setTimeout(() => { bar.style.animation = ''; bar.style.width = '0%'; bar.style.opacity = '0'; }, 1800);
 
   // Numéro de section
   const sections = ['Les degrés & modes','Identité des notes'];
@@ -3887,6 +4222,7 @@ function addScrollIndicator(container) {
     const total = container.scrollHeight - container.clientHeight;
     const pct = total > 0 ? scrolled / total : 0;
     bar.style.width = (pct * 100) + '%';
+    bar.style.opacity = pct > 0 ? '1' : '0';
     sectionLabel.style.opacity = scrolled > 20 ? '1' : '0';
     arrow.style.opacity = pct > 0.9 ? '0' : '1';
     arrow.style.transition = 'opacity 0.3s';
@@ -4196,16 +4532,18 @@ const STAFF_NOTES_FA_C = [
   { name:'Sol', num:3,  pos:128, color:'#90B8F0', ledger:true,  ledgers:[110,122] }     // Sol1 — interligne sous La1
 ];
 
-// Clé de Fa — notes de Sol (ligne 1 haut) à Do grave (ligne supp bas)
+// Clé de Fa — 8 notes Sol2→Sol3 (niveau Débutant)
+// Grille portée clé de Fa : y=98 ligne1(Sol2), y=86 ligne2(Si2), y=74 ligne3(Ré3), y=62 ligne4(Fa3), y=50 ligne5(La3)
+// Do3 = ligne supplémentaire SOUS la portée (y=110), Mi3 = interligne entre ligne1 et ligne2 (y=92)
 const STAFF_NOTES_FA = [
-  { name:'Do',  num:1, pos: 80, color:'#F2A98A', ledger:false },  // interligne 2
-  { name:'Ré',  num:2, pos: 74, color:'#F4C08A', ledger:false },  // ligne 3 (milieu)
-  { name:'Mi',  num:3, pos: 68, color:'#F5E08A', ledger:false },  // interligne 3
-  { name:'Fa',  num:4, pos: 62, color:'#90D4A0', ledger:false },  // ligne 4
-  { name:'Sol', num:5, pos: 56, color:'#90B8F0', ledger:false },  // interligne 4
-  { name:'La',  num:6, pos: 50, color:'#A8A0E0', ledger:false },  // ligne 5 (haut)
-  { name:'Si',  num:7, pos: 44, color:'#C8A0D8', ledger:false },  // interligne au-dessus
-  { name:'Do',  num:8, pos: 38, color:'#F2A98A', ledger:false }   // 2e interligne au-dessus
+  { name:'Sol', num:1, pos: 98, color:'#90B8F0', ledger:false },  // ligne 1 (bas) — Sol2
+  { name:'La',  num:2, pos: 92, color:'#A8A0E0', ledger:false },  // interligne 1 — La2
+  { name:'Si',  num:3, pos: 86, color:'#C8A0D8', ledger:false },  // ligne 2 — Si2
+  { name:'Do',  num:4, pos: 80, color:'#F2A98A', ledger:false },  // interligne 2 — Do3
+  { name:'Ré',  num:5, pos: 74, color:'#F4C08A', ledger:false },  // ligne 3 (milieu) — Ré3
+  { name:'Mi',  num:6, pos: 68, color:'#F5E08A', ledger:false },  // interligne 3 — Mi3
+  { name:'Fa',  num:7, pos: 62, color:'#90D4A0', ledger:false },  // ligne 4 — Fa3
+  { name:'Sol', num:8, pos: 56, color:'#90B8F0', ledger:false }   // interligne 4 — Sol3
 ];
 
 let staffClef = 'sol';
@@ -4757,7 +5095,6 @@ function buildStaffSVG(note, showName) {
 
 
 const VOICE_TEXTS = {
-  intro_book: "Il y a fort longtemps, était un livre qui tomba dans l'oubli, puis retrouvé par hasard. Ce livre appartenait à la maison des savants, dont il ne reste que quelques rescapés. Il était dans une bibliothèque en Grèce — il semble qu'il appartenait à l'école pythagoricienne, qui cherchait à comprendre le secret de la musique et de l'univers par les mathématiques. Je vous propose de partager la lecture de ce dernier ensemble...",
   intro_closing: "Nous sommes les Sock Notes — les notes-chaussettes. Nous allons vous aider à entrer dans le monde de l'harmonie musicale.",
   0: "Bienvenue sur la page des intervalles. Un intervalle mesure la distance entre deux notes, comptée en demi-tons. Choisissez une note de départ, puis lancez l'animation pour découvrir tous les intervalles.",
   1: "La gamme majeure. La tierce, ce petit intervalle, change beaucoup de choses — majeur ou mineur, joie ou mélancolie. Un demi-ton de plus ou de moins, et la couleur de la musique bascule.",
@@ -4774,9 +5111,27 @@ VOICE.init();
 // Précharger l'audio intro
 const _preloadAudio = new Audio(INTRO_AUDIO_B64);
 _preloadAudio.preload = 'auto';
+_preloadAudio.loop = true; // boucle pour couvrir toute la présentation
+_preloadAudio.load();
+_preloadAudio.addEventListener('canplaythrough', () => {
+  const btn = document.getElementById('introStartBtn');
+  if (btn) {
+    btn.style.transition = 'opacity 0.5s';
+    btn.style.opacity = '1';
+    btn.style.animation = 'pulseCTA 1.5s ease-in-out infinite';
+  }
+}, { once: true });
 buildPianoVertical();
 buildControls();
 render();
+// Corrige un flash : render() force #controls en display:block/visible (contenu du niveau
+// "Intervalles"), ce qui peut apparaître brièvement pendant les transitions de l'intro
+// (entre l'écran du prénom et l'écran des numéros). On le recache ici — showPageAfterIntro()
+// appelle déjà buildControls()/render() à la fin de la séquence pour le réafficher correctement.
+(function() {
+  const ctrl = document.getElementById('controls');
+  if (ctrl) { ctrl.style.display = 'none'; ctrl.style.visibility = 'hidden'; }
+})();
 hidePageDuringIntro();
 document.querySelectorAll(".lvl-tab").forEach(t => t.classList.toggle("active", parseInt(t.dataset.level) === level));
 const _skipBtn = document.getElementById('skipIntroBtn');
@@ -4833,99 +5188,644 @@ runIntro();
 })();
 
 
-// ═══ ANIMATION COFFRE AU TRÉSOR ═══
-function animateTreasureChest() {
-  const chest = document.getElementById('treasureChest');
-  const lid   = document.getElementById('chestLid');
-  const light = document.getElementById('chestLight');
-  const book  = document.getElementById('introBook');
-  const key   = document.getElementById('chestKey');
-  if (!chest || !book) return;
+// ═══ RESET PROFIL ═══
+window.resetProfil = function() {
+  if (!confirm('Réinitialiser votre profil ?')) return;
+  localStorage.removeItem('hm_profil');
+  location.reload();
+};
 
-  // Phase 0 : la clé apparaît et flotte vers la serrure (dès le début)
-  setTimeout(() => {
-    if (key) key.style.animation = 'keyFloat 1.8s ease-in-out forwards';
-  }, 400);
 
-  // Phase 0b : la clé tourne dans la serrure (après 2.2s)
-  setTimeout(() => {
-    if (key) key.style.animation = 'keyTurn 0.8s ease-in-out forwards';
-  }, 2200);
 
-  // Phase 1 : vibration du coffre (après 3.0s — clé a tourné)
-  setTimeout(() => {
-    chest.style.animation = 'chestShake 0.25s ease-in-out 6';
-  }, 3000);
 
-  // Phase 2 : couvercle s'ouvre (après 3.8s)
-  setTimeout(() => {
-    if (lid) lid.style.animation = 'chestOpen 1.2s ease-out forwards';
-    if (light) { light.style.opacity = '1'; light.style.animation = 'chestGlow 0.8s ease-out forwards'; }
-  }, 3800);
 
-  // Phase 3 : livre s'élève (après 5.2s — couvercle bien ouvert)
-  setTimeout(() => {
-    book.style.opacity = '1';
-    book.style.animation = 'bookRise 3.5s ease-out forwards';
-  }, 5200);
-
-  // Phase 4 : coffre disparaît (après 6.5s)
-  setTimeout(() => {
-    chest.style.animation = 'chestFade 0.8s ease-out forwards';
-    setTimeout(() => { chest.style.display = 'none'; }, 800);
-  }, 6500);
-
-  // Phase 5 : livre flotte (après 8.8s)
-  setTimeout(() => {
-    book.style.animation = 'bookFloat 4s ease-in-out infinite';
-    book.style.transform = 'translate(-50%, -120px) scale(1)';
-  }, 8800);
-}
-// ═══ TIMER SESSION ═══
+// ═══ ÉCRAN DE COUVERTURE ═══
 (function() {
-  const sessionStart = Date.now();
-  const todayKey = 'hmTimer_' + new Date().toISOString().slice(0,10);
+  const pick = 'linear-gradient(180deg,#1a4f82 0%,#112d52 50%,#091a30 100%)';
+  window.appBg = pick;
 
-  // Nettoyer les anciennes clés (autres jours)
-  Object.keys(localStorage).forEach(k => {
-    if (k.startsWith('hmTimer_') && k !== todayKey) localStorage.removeItem(k);
+  // Applique le fond sur le body et tous les écrans d'intro
+  document.body.style.background = pick;
+  document.body.style.minHeight = '100vh';
+  ['numerosScreen','motsIntroScreen','motsRetourScreen','motsAltIntroScreen',
+   'douzeNotesScreen','motsAltRetourScreen','introScreen'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.background = pick;
   });
 
-  function getTotalToday() {
-    return parseInt(localStorage.getItem(todayKey) || '0', 10);
+  const inner = document.getElementById('coverInner');
+  if (inner) inner.style.background = pick;
+
+  window.closeCoverScreen = function() {
+    const cs = document.getElementById('coverScreen');
+    if (!cs) return;
+    cs.style.transition = 'opacity 0.6s';
+    cs.style.opacity = '0';
+    setTimeout(() => {
+      if (cs) cs.remove();
+      const ps = document.getElementById('profilScreen');
+      if (ps) {
+        ps.style.display = 'flex';
+        setTimeout(() => { const el = document.getElementById('profilPrenom'); if (el) el.focus(); }, 150);
+      }
+    }, 650);
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('coverScreen')) {
+      if (e.key === 'Enter' || e.key === ' ') closeCoverScreen();
+    }
+  });
+})();
+
+
+(function() {
+
+  // ── Validation du profil (prénom uniquement) ──
+  window.validerProfil = function() {
+    const profil = {
+      prenom: document.getElementById('profilPrenom').value.trim(),
+      date:   new Date().toISOString().slice(0,10)
+    };
+    localStorage.setItem('hm_profil', JSON.stringify(profil));
+    appliquerProfil(profil);
+  };
+
+  // ── Utilitaire : transition sans flash — lance onContinue immédiatement,
+  //    cache l'écran A seulement après la fin du fondu ──
+  function fadeOutScreen(screen, onContinue) {
+    screen.style.opacity = '0';
+    setTimeout(() => onContinue(), 300); // lance B à mi-fondu de A
+    setTimeout(() => {
+      screen.style.display = 'none';
+      screen.style.pointerEvents = 'none';
+    }, 650);
   }
 
-  function fmt(sec) {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  // ── Les mots fondamentaux — mêmes que le récap de fin de séquence ──
+  const MOTS_FONDAMENTAUX = ['Note', 'Degré', 'Tonique', 'Gamme', 'Intervalle', 'Accord', 'Tonalité'];
+
+  // Images-sens pour le retour après la séquence — pas des définitions, des échos de ce qui vient d'être vécu
+  const MOTS_IMAGES = {
+    'Note':      "un point posé sur le clavier — une note caractérise un son - signe essentiel de l'écriture musicale, représentant à la fois la hauteur et la durée d'un son.",
+    'Degré':     "ce sont comme les marches d'un immeuble en partant de la tonalité choisie dans l'ordre dans lesquelles on les a gravies.",
+    'Tonique':   "Dans la musique tonale, la tonique est le premier degré d'une tonalité - la tonique donne le ton -",
+    'Gamme':     "le chemin entier marche après marche, depuis la tonique jusqu'à son octave - une gamme est un réservoir de notes qui possède une saveur musicale particulière de par sa sonorité et sa structure -",
+    'Intervalle':"l'espace entre deux notes — se calcule en ton et demi-ton, mais se nomme aussi par un chiffre : par exemple une tierce (3), une quarte (4) ou une septième (7 ou 7-) — les mêmes chiffres que ceux des degrés.",
+    'Accord':    "Au moins 4 notes empilées et jouées ensemble — les accords sont issus des gammes, c'est ce que la gamme laisse deviner.",
+    'Tonalité':  "le territoire entier que dessine une tonique et sa gamme - Une tonalité est définie et désignée par deux éléments : le nom de sa tonique et son mode, majeur ou mineur ou autres."
+  };
+
+  // ── Écran "Les mots" — étape 1 (avant la séquence) ──
+  window.showMotsIntroScreen = function(onContinue) {
+    const screen = document.getElementById('motsIntroScreen');
+    const list = document.getElementById('motsIntroList');
+    const btn = document.getElementById('motsIntroBtn');
+    if (!screen || !list || !btn) { onContinue(); return; }
+    list.innerHTML = '';
+    MOTS_FONDAMENTAUX.forEach(mot => {
+      const span = document.createElement('span');
+      span.textContent = mot;
+      span.style.cssText = "font-family:'Cormorant Garamond',Georgia,serif; font-size:20px; font-weight:700; color:#48C9B0; letter-spacing:1px; padding:6px 16px; border:1px solid rgba(72,201,176,0.35); border-radius:18px;";
+      list.appendChild(span);
+    });
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+    btn.onclick = () => {
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  // ── Écran "Les mots" — étape 2 (retour après la séquence, avec sens) ──
+  window.showMotsRetourScreen = function(onContinue) {
+    const screen = document.getElementById('motsRetourScreen');
+    const list = document.getElementById('motsRetourList');
+    const btn = document.getElementById('motsRetourBtn');
+    if (!screen || !list || !btn) { onContinue(); return; }
+    list.innerHTML = '';
+    MOTS_FONDAMENTAUX.forEach(mot => {
+      const row = document.createElement('div');
+      row.innerHTML = `<span style="font-family:'Cormorant Garamond',Georgia,serif; font-size:19px; font-weight:700; color:#48C9B0;">${mot}</span> <span style="font-size:15px; color:#FFFFFF; font-style:italic; line-height:1.6;">— ${MOTS_IMAGES[mot]}</span>`;
+      list.appendChild(row);
+    });
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+    btn.onclick = () => {
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // CYCLE "12 NOTES" — dièse, bémol, altération, armure
+  // ════════════════════════════════════════════════════════════
+
+  const MOTS_ALTERATIONS = ['Dièse', 'Bémol', 'Altération', 'Armure'];
+
+  const MOTS_ALT_IMAGES = {
+    'Dièse':      "la note qui monte d'une marche plus petite que les autres — celle qui vient de s'allumer sur une touche noire.",
+    'Bémol':      "la même marche vue depuis l'autre sens — la note qui descend plutôt que celle qui monte.",
+    'Altération': "le nom commun du dièse et du bémol — un petit ajustement qui garde l'écart juste entre les marches.",
+    'Armure':     "l'ensemble des altérations qu'une tonalité porte tout le temps, du début à la fin, sans qu'on ait à le redire à chaque note."
+  };
+
+  // Exemple guidé : Do (sans altération) puis Sol (avec un dièse) pour montrer la nécessité
+  const GUIDED_SEQUENCE = [
+    { tonic: 'Do', focus: null,
+      phrase: "En Do, les 7 marches s'enchaînent sans qu'aucune touche noire ne soit nécessaire — un cas particulier, pas la règle." },
+    { tonic: 'Sol', focus: 6,
+      phrase: "En Sol, pour garder le même enchaînement de marches, la 7ᵉ note doit être Fa♯ — une touche noire. Sans elle, l'écart ne serait pas le bon." }
+  ];
+
+  // ── Écran "Les mots" (cycle 12 notes, étape 1) ──
+  window.showMotsAltIntroScreen = function(onContinue) {
+    const screen = document.getElementById('motsAltIntroScreen');
+    const list = document.getElementById('motsAltIntroList');
+    const btn = document.getElementById('motsAltIntroBtn');
+    if (!screen || !list || !btn) { onContinue(); return; }
+    list.innerHTML = '';
+    MOTS_ALTERATIONS.forEach(mot => {
+      const span = document.createElement('span');
+      span.textContent = mot;
+      span.style.cssText = "font-family:'Cormorant Garamond',Georgia,serif; font-size:20px; font-weight:700; color:#48C9B0; letter-spacing:1px; padding:6px 16px; border:1px solid rgba(72,201,176,0.35); border-radius:18px;";
+      list.appendChild(span);
+    });
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+    btn.onclick = () => {
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  // ── Écran "Pourquoi 12 notes ?" (cycle 12 notes, étape 2) ──
+  window.showDouzeNotesScreen = function(onContinue) {
+    const screen = document.getElementById('douzeNotesScreen');
+    if (!screen) { onContinue(); return; }
+
+    window.PianoKit.buildKeyboard('douzeWhiteKeys', 'douzeBlackKeys');
+
+    const subtitleEl = document.getElementById('douzeNotesSubtitle');
+    const numEl = document.getElementById('douzeNoteNum');
+    const labelEl = document.getElementById('douzeNoteLabel');
+    const phraseEl = document.getElementById('douzeNotePhrase');
+    const continueBtn = document.getElementById('douzeContinueBtn');
+    const tonicRow = document.getElementById('douzeTonicRow');
+
+    // Crée une fois les 7 éléments fixes (label, numéro, marqueur) — réutilisés et animés à chaque tonalité
+    let _scaleEls = null;
+    function ensureScaleEls() {
+      if (_scaleEls) return _scaleEls;
+      const gLabels = document.getElementById('douzeLabels');
+      const gDegrees = document.getElementById('douzeDegrees');
+      const gHighlights = document.getElementById('douzeHighlights');
+      if (!gLabels || !gDegrees || !gHighlights) return null;
+      const ns = 'http://www.w3.org/2000/svg';
+      const TR = 'cx 0.5s ease, x 0.5s ease, y 0.5s ease, fill 0.3s ease, opacity 0.3s ease';
+      const labels = [], degrees = [], halos = [], intervals = [];
+      for (let i = 0; i < 7; i++) {
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('text-anchor', 'middle');
+        t.setAttribute('font-size', '16');
+        t.setAttribute('font-family', "'Cormorant Garamond', Georgia, serif");
+        t.setAttribute('font-weight', '700');
+        t.style.transition = TR;
+        gLabels.appendChild(t);
+        labels.push(t);
+
+        const n = document.createElementNS(ns, 'text');
+        n.setAttribute('text-anchor', 'middle');
+        n.setAttribute('font-size', '17');
+        n.setAttribute('font-family', "'Cormorant Garamond', Georgia, serif");
+        n.setAttribute('font-weight', '700');
+        n.style.transition = TR;
+        gDegrees.appendChild(n);
+        degrees.push(n);
+
+        const halo = document.createElementNS(ns, 'circle');
+        halo.setAttribute('cy', '23');
+        halo.setAttribute('r', '13');
+        halo.setAttribute('fill', '#48C9B0');
+        halo.setAttribute('opacity', '0');
+        halo.style.transition = TR;
+        gHighlights.appendChild(halo);
+        halos.push(halo);
+      }
+      // 6 étiquettes d'écart, une entre chaque paire de notes consécutives (1 à 7)
+      const gIntervals = document.getElementById('douzeIntervals');
+      if (gIntervals) {
+        for (let i = 0; i < 6; i++) {
+          const lbl = document.createElementNS(ns, 'text');
+          lbl.setAttribute('text-anchor', 'middle');
+          lbl.setAttribute('font-size', '13');
+          lbl.setAttribute('font-family', 'Arial');
+          lbl.setAttribute('font-weight', '600');
+          lbl.setAttribute('fill', '#E8D5B0');
+          lbl.setAttribute('y', '-6');
+          lbl.style.transition = TR;
+          gIntervals.appendChild(lbl);
+          intervals.push(lbl);
+        }
+      }
+      const frame = document.getElementById('douzeScaleFrame');
+      if (frame) frame.style.transition = 'x 0.5s ease, width 0.5s ease';
+      _scaleEls = { labels, degrees, halos, intervals, frame };
+      return _scaleEls;
+    }
+
+    function renderScale(tonic) {
+      const sc = window.PianoKit.MAJOR_SCALES[tonic];
+      const els = ensureScaleEls();
+      if (!els) return;
+
+      for (let i = 0; i < 7; i++) {
+        const pos = window.PianoKit.degreeToKeyPos(i, tonic);
+        const t = els.labels[i];
+        t.setAttribute('x', pos.cx);
+        t.setAttribute('y', pos.isBlack ? '38' : '60');
+        t.setAttribute('fill', pos.isBlack ? '#F0E8D8' : '#1A5276');
+        t.textContent = sc[i];
+
+        const n = els.degrees[i];
+        n.setAttribute('x', pos.cx);
+        n.setAttribute('y', pos.isBlack ? '50' : '73');
+        n.setAttribute('fill', pos.isBlack ? '#F4D03F' : '#1A5276');
+        n.textContent = i + 1;
+
+        // Halo discret : glisse vers sa nouvelle position, visible seulement sur touche noire
+        const halo = els.halos[i];
+        halo.setAttribute('cx', pos.cx);
+        halo.setAttribute('opacity', pos.isBlack ? '0.3' : '0');
+      }
+
+      // Étiquettes d'écart entre chaque paire de notes consécutives — glissent avec le reste
+      if (els.intervals && els.intervals.length === 6) {
+        for (let i = 0; i < 6; i++) {
+          const posA = window.PianoKit.degreeToKeyPos(i, tonic);
+          const posB = window.PianoKit.degreeToKeyPos(i + 1, tonic);
+          const semis = window.PianoKit.MAJOR_INTERVALS[i]; // 1 ou 2 demi-tons
+          const value = semis === 1 ? '0,5' : '1';
+          const lbl = els.intervals[i];
+          lbl.setAttribute('x', ((posA.cx + posB.cx) / 2).toFixed(1));
+          lbl.textContent = value;
+        }
+      }
+
+      // Cadre autour de la 1ère octave — glisse également vers sa nouvelle position
+      const frame = els.frame;
+      if (frame) {
+        const firstPos = window.PianoKit.degreeToKeyPos(0, tonic);
+        const lastPos = window.PianoKit.degreeToKeyPos(6, tonic);
+        const WHITE_W = window.PianoKit.WHITE_W;
+        const margin = WHITE_W * 0.32;
+        const left = Math.min(firstPos.cx, lastPos.cx) - WHITE_W/2 - margin/2;
+        const right = Math.max(firstPos.cx, lastPos.cx) + WHITE_W/2 + margin/2;
+        frame.setAttribute('x', left.toFixed(1));
+        frame.setAttribute('width', (right - left).toFixed(1));
+        frame.setAttribute('y', '-3');
+        frame.setAttribute('height', (window.PianoKit.KEY_H + 6).toFixed(1));
+        frame.setAttribute('opacity', '0.85');
+      }
+    }
+
+    function buildTonicSelector() {
+      tonicRow.innerHTML = '';
+      window.PianoKit.TONIC_ORDER.forEach(t => {
+        const btn = document.createElement('button');
+        btn.textContent = t;
+        btn.style.cssText = `
+          background: ${t === 'Do' ? 'linear-gradient(135deg,#C9A84C,#8B6914)' : 'rgba(255,255,255,0.07)'};
+          color: ${t === 'Do' ? '#0D1117' : '#A8C4D8'};
+          border: 1px solid ${t === 'Do' ? '#C9A84C' : 'rgba(255,255,255,0.15)'};
+          padding: 5px 11px; border-radius: 16px; font-size: 13px; font-weight: 600;
+          cursor: pointer; font-family: 'Cormorant Garamond', Georgia, serif;
+          transition: all 0.2s; letter-spacing: 0.5px;
+        `;
+        btn.onclick = () => {
+          tonicRow.querySelectorAll('button').forEach(b => {
+            const active = b.textContent === t;
+            b.style.background = active ? 'linear-gradient(135deg,#C9A84C,#8B6914)' : 'rgba(255,255,255,0.07)';
+            b.style.color = active ? '#0D1117' : '#A8C4D8';
+            b.style.borderColor = active ? '#C9A84C' : 'rgba(255,255,255,0.15)';
+          });
+          if (subtitleEl) subtitleEl.innerHTML = `<strong style="color:#F4D03F">${t}</strong> — observez quelles notes tombent sur les touches noires.`;
+          if (numEl) numEl.textContent = '';
+          if (labelEl) labelEl.textContent = '';
+          if (phraseEl) phraseEl.textContent = '';
+          renderScale(t);
+        };
+        tonicRow.appendChild(btn);
+      });
+    }
+
+    let _guidedTimer = null;
+    function playGuidedStep(i) {
+      if (i >= GUIDED_SEQUENCE.length) {
+        // Fin de l'exemple guidé : afficher le sélecteur libre + bouton continuer
+        if (subtitleEl) subtitleEl.innerHTML = "Choisissez n'importe quelle tonalité ci-dessous pour continuer l'exploration.";
+        if (numEl) numEl.textContent = '';
+        if (labelEl) labelEl.textContent = '';
+        if (phraseEl) phraseEl.textContent = '';
+        buildTonicSelector();
+        renderScale('Do');
+        if (continueBtn) continueBtn.style.opacity = '1';
+        return;
+      }
+      const step = GUIDED_SEQUENCE[i];
+      if (subtitleEl) subtitleEl.innerHTML = step.phrase;
+      renderScale(step.tonic);
+      if (step.focus !== null) {
+        const sc = window.PianoKit.MAJOR_SCALES[step.tonic];
+        if (numEl) numEl.textContent = step.focus + 1;
+        if (labelEl) labelEl.textContent = sc[step.focus];
+        if (phraseEl) phraseEl.textContent = '';
+      } else {
+        if (numEl) numEl.textContent = '';
+        if (labelEl) labelEl.textContent = '';
+      }
+      _guidedTimer = setTimeout(() => playGuidedStep(i + 1), 4200);
+    }
+
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+    if (continueBtn) continueBtn.style.opacity = '0';
+    playGuidedStep(0);
+
+    continueBtn.onclick = () => {
+      if (_guidedTimer) clearTimeout(_guidedTimer);
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  // ── Écran "Les mots" (cycle 12 notes, étape 3 — retour avec sens) ──
+  window.showMotsAltRetourScreen = function(onContinue) {
+    const screen = document.getElementById('motsAltRetourScreen');
+    const list = document.getElementById('motsAltRetourList');
+    const btn = document.getElementById('motsAltRetourBtn');
+    if (!screen || !list || !btn) { onContinue(); return; }
+    list.innerHTML = '';
+    MOTS_ALTERATIONS.forEach(mot => {
+      const row = document.createElement('div');
+      row.innerHTML = `<span style="font-family:'Cormorant Garamond',Georgia,serif; font-size:19px; font-weight:700; color:#48C9B0;">${mot}</span> <span style="font-size:15px; color:#FFFFFF; font-style:italic; line-height:1.6;">— ${MOTS_ALT_IMAGES[mot]}</span>`;
+      list.appendChild(row);
+    });
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+    btn.onclick = () => {
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // ÉCRAN "LES NUMÉROS" — clavier chromatique, en deux temps : 7 notes puis 12 notes
+  // Très simple : juste le clavier + le manche, texte minimal au-dessus
+  // ════════════════════════════════════════════════════════════
+
+  // Numéros des 7 notes principales (sur les touches principales du clavier)
+  const CHROMA_PRINCIPAL = { 0:'1', 2:'2', 4:'3', 5:'4', 7:'5', 9:'6', 11:'7' };
+  // Numéros des 5 notes intermédiaires : numéro de la principale précédente + "+"
+  const CHROMA_INTERMEDIAIRE = { 1:'1+', 3:'2+', 6:'4+', 8:'5+', 10:'6+' };
+  const CHROMA_INTERMEDIAIRE_MOINS = { 1:'2-', 3:'3-', 6:'5-', 8:'6-', 10:'7-' };
+  // Numéro unique gardé par touche noire, selon l'usage le plus courant en harmonie jazz
+  const CHROMA_NUM_PREFERRED = { 1:'2-', 3:'3-', 6:'5-', 8:'5+', 10:'7-' };
+  // Noms de notes (en Do) pour chaque position chromatique — utilisés pour piano et guitare
+  const CHROMA_NOTE_NAME = { 0:'Do', 1:'Do♯', 2:'Ré', 3:'Ré♯', 4:'Mi', 5:'Fa', 6:'Fa♯', 7:'Sol', 8:'Sol♯', 9:'La', 10:'La♯', 11:'Si' };
+  const CHROMA_NOTE_NAME_MOINS = { 1:'Ré♭', 3:'Mi♭', 6:'Sol♭', 8:'La♭', 10:'Si♭' };
+
+  // Noms de notes sur la corde de Mi grave (la plus basse, en bas du manche) — cases 0 (à vide) à 12
+  const NECK_FRET_X = [62, 96, 134, 172, 207, 240, 272, 302, 331, 358, 384, 409, 432];
+  const NECK_LOW_E_Y = 89;
+  function renderNumerosNeckNoteNames() {
+    const g = document.getElementById('numerosNeckNoteNames');
+    if (!g) return;
+    g.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    for (let f = 0; f <= 12; f++) {
+      const chroma = (4 + f) % 12; // Mi = chroma 4 à vide
+      const isNatural = [0,2,4,5,7,9,11].includes(chroma);
+      if (!isNatural) continue; // on ne montre que les 7 notes principales, comme sur le piano
+      const cx = NECK_FRET_X[f];
+      const cy = NECK_LOW_E_Y;
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', cx);
+      circle.setAttribute('cy', cy);
+      circle.setAttribute('r', f === 0 ? '13' : '14');
+      if (f === 0) {
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', '#F4D03F');
+        circle.setAttribute('stroke-width', '2.5');
+      } else {
+        circle.setAttribute('fill', '#F4D03F');
+        circle.setAttribute('stroke', '#8B6914');
+        circle.setAttribute('stroke-width', '1.5');
+      }
+      g.appendChild(circle);
+
+      const t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', cx);
+      t.setAttribute('y', cy + 4);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', '11');
+      t.setAttribute('font-family', 'Arial');
+      t.setAttribute('font-weight', 'bold');
+      t.setAttribute('fill', f === 0 ? '#F4D03F' : '#3A2A08');
+      t.textContent = CHROMA_NOTE_NAME[chroma];
+      g.appendChild(t);
+    }
   }
 
-  function update() {
-    const sessionSec = Math.floor((Date.now() - sessionStart) / 1000);
-    const totalSec   = getTotalToday() + sessionSec;
+  function renderNumerosKeyboard() {
+    window.PianoKit.buildKeyboard('numerosWhiteKeys', 'numerosBlackKeys');
+    renderNumerosNeckNoteNames();
+    const gMain = document.getElementById('numerosLabels');
+    const gAlt = document.getElementById('numerosLabelsAlt');
+    if (!gMain || !gAlt) return;
+    gMain.innerHTML = '';
+    gAlt.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
 
-    const elSession = document.getElementById('timerSession');
-    const elTotal   = document.getElementById('timerTotal');
-    if (elSession) elSession.textContent = '⏱ Session : ' + fmt(sessionSec);
+    for (let chroma = 0; chroma < 12; chroma++) {
+      const pos = window.PianoKit.CHROMA_X_FOR(chroma);
+      const isAlt = CHROMA_INTERMEDIAIRE.hasOwnProperty(chroma);
+      const num = isAlt ? CHROMA_NUM_PREFERRED[chroma] : CHROMA_PRINCIPAL[chroma];
+      const t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', pos.cx);
+      t.setAttribute('y', isAlt ? '28' : '62');
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', '16');
+      t.setAttribute('font-family', 'Arial');
+      t.setAttribute('font-weight', 'bold');
+      t.setAttribute('fill', '#1C1008');
+      t.textContent = num;
+      t.style.transition = 'opacity 0.5s';
 
-    // Sauvegarder périodiquement
-    localStorage.setItem(todayKey, getTotalToday() + sessionSec + '');
+      // Nom de la note : dièses affichés au-dessus du piano ;
+      // notes naturelles affichées en dessous du clavier, comme avant.
+      const noteName = document.createElementNS(ns, 'text');
+      noteName.setAttribute('x', pos.cx);
+      noteName.setAttribute('y', isAlt ? '-8' : '98');
+      noteName.setAttribute('text-anchor', 'middle');
+      noteName.setAttribute('font-size', isAlt ? '13' : '13');
+      noteName.setAttribute('font-family', 'Arial');
+      noteName.setAttribute('font-weight', isAlt ? '600' : '600');
+      noteName.setAttribute('fill', isAlt ? '#E8D5B0' : '#E8D5B0');
+      noteName.textContent = CHROMA_NOTE_NAME[chroma];
+      noteName.style.transition = 'opacity 0.5s';
+
+      if (isAlt) {
+        t.style.opacity = '0';
+        noteName.style.opacity = '0';
+        gAlt.appendChild(t);
+        gAlt.appendChild(noteName);
+      } else {
+        gMain.appendChild(t);
+        gMain.appendChild(noteName);
+      }
+    }
   }
 
-  // Afficher après 10 secondes
-  setTimeout(() => {
-    const el = document.getElementById('sessionTimer');
-    if (el) el.style.opacity = '0.6';
-  }, 10000);
+  window.showNumerosScreen = function(onContinue) {
+    const screen = document.getElementById('numerosScreen');
+    const btn = document.getElementById('numerosBtn');
+    const title = document.getElementById('numerosTitle');
+    if (!screen || !btn) { onContinue(); return; }
 
-  // Mettre à jour chaque seconde
-  setInterval(update, 1000);
+    renderNumerosKeyboard();
+    let secondStep = false;
 
-  // Sauvegarder avant de quitter
-  window.addEventListener('beforeunload', () => {
-    const sessionSec = Math.floor((Date.now() - sessionStart) / 1000);
-    localStorage.setItem(todayKey, (getTotalToday() + sessionSec) + '');
+    screen.style.display = 'flex';
+    screen.style.opacity = '0';
+    screen.style.transition = 'opacity 0.6s';
+    setTimeout(() => { screen.style.opacity = '1'; }, 30);
+
+    btn.onclick = () => {
+      if (!secondStep) {
+        // Premier clic : révéler les notes intermédiaires + nouveau texte
+        secondStep = true;
+        if (title) {
+          title.style.opacity = '0';
+          setTimeout(() => {
+            title.textContent = 'Et 12 notes en tout, avec les notes intermédiaires (notes noires)';
+            title.style.opacity = '1';
+          }, 400);
+        }
+        const subtitle = document.getElementById('numerosSubtitle');
+        if (subtitle) {
+          subtitle.style.opacity = '0';
+        }
+        const gAlt = document.getElementById('numerosLabelsAlt');
+        if (gAlt) {
+          setTimeout(() => {
+            Array.from(gAlt.children).forEach(el => { el.style.opacity = '1'; });
+          }, 400);
+        }
+        const guitareIntro = document.getElementById('numerosGuitareIntro');
+        if (guitareIntro) {
+          setTimeout(() => { guitareIntro.style.opacity = '1'; }, 400);
+        }
+        return;
+      }
+      // Second clic : continuer vers la suite du parcours
+      fadeOutScreen(screen, onContinue);
+    };
+  };
+
+  function appliquerProfil(profil) {
+    const ps = document.getElementById('profilScreen');
+    if (ps) {
+      ps.style.opacity = '0';
+      ps.style.transition = 'opacity 0.5s';
+      setTimeout(() => {
+        ps.remove();
+        // Révéler l'écran "Les mots" avant l'introScreen (qui reste caché pour l'instant)
+        const introScreen = document.getElementById('introScreen');
+        if (introScreen) {
+          introScreen.style.display = 'none';
+          introScreen.style.opacity = '0';
+          showNumerosScreen(() => {
+            showMotsIntroScreen(() => {
+              introScreen.style.display = 'flex';
+              introScreen.style.opacity = '1';
+              // Afficher le bouton
+              const btn = document.getElementById('introStartBtn');
+              if (btn) {
+                btn.style.transition = 'opacity 0.5s';
+                btn.style.opacity = '1';
+                btn.style.animation = 'pulseCTA 1.5s ease-in-out infinite';
+              }
+              // Lancer l'intro automatiquement après 1.2s
+              setTimeout(() => {
+                if (document.getElementById('introScreen')) {
+                  startIntroWithAudio();
+                }
+              }, 1200);
+            });
+          });
+        } else {
+          // Pas d'introScreen = on va directement dans l'appli
+          showPageAfterIntro(); buildControls(); render(); buildSocksRow();
+        }
+      }, 500);
+    }
+
+    if (profil.prenom) {
+      window._introBienvenueProfil = profil;
+    }
+  }
+
+  // ── Au chargement : profil déjà existant ? ──
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('hm_profil');
+    if (saved) {
+      try {
+        const profil = JSON.parse(saved);
+        // Masquer le body le temps que le premier écran prenne le relais
+        document.body.style.visibility = 'hidden';
+        // Supprimer le profilScreen immédiatement
+        const ps = document.getElementById('profilScreen');
+        if (ps) ps.remove();
+        // Stocker le prénom pour l'afficher à la fin de la séquence
+        if (profil.prenom) {
+          window._introBienvenueProfil = profil;
+        }
+        // Même chaîne d'écrans que appliquerProfil : numéros → mots → séquence
+        const introScreen = document.getElementById('introScreen');
+        if (introScreen) {
+          introScreen.style.display = 'none';
+          introScreen.style.opacity = '0';
+          showNumerosScreen(() => {
+            showMotsIntroScreen(() => {
+              introScreen.style.display = 'flex';
+              introScreen.style.opacity = '1';
+              const btn = document.getElementById('introStartBtn');
+              if (btn) {
+                btn.style.transition = 'opacity 0.5s';
+                btn.style.opacity = '1';
+                btn.style.animation = 'pulseCTA 1.5s ease-in-out infinite';
+              }
+              setTimeout(() => {
+                if (document.getElementById('introScreen')) {
+                  startIntroWithAudio();
+                }
+              }, 1200);
+            });
+          });
+          // Rétablir la visibilité après le fade-in de numerosScreen (0.6s)
+          setTimeout(() => { document.body.style.visibility = ''; }, 700);
+        } else {
+          document.body.style.visibility = '';
+        }
+      } catch(e) { /* profil corrompu, on ignore */ }
+    }
   });
 })();
 
